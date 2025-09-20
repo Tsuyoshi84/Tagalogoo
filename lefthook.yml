@@ -2,6 +2,6 @@ pre-commit:
   parallel: true
   commands:
     biome:
-      glob: "*.{js,ts,jsx,tsx,json,jsonc,vue,graphql}"
+      glob: "*.{js,ts,jsx,tsx,json,jsonc,vue}"
       run: pnpm check --staged --no-errors-on-unmatched
       stage_fixed: true
