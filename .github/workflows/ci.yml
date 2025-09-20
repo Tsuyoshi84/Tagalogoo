@@ -1,0 +1,62 @@
+name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - "**/*.*"
+      - "!**/*.md"
+      - "!.cursorrules"
+      - "!.cursor/**"
+      - "!.vscode/**"
+      - "!.github/dependabot.yml"
+      - "!.github/copilot-instructions.md"
+      - "!.github/chatmodes/**"
+      - "!.github/instructions/**"
+      - "!.github/prompts/**"
+      - "!.github/ISSUE_TEMPLATE/**"
+      - "!.github/PULL_REQUEST_TEMPLATE/**"
+      - "!.coderabbit.yaml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: ".tool-versions"
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run Biome check
+        run: pnpm check
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Build project
+        run: pnpm build

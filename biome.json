@@ -1,0 +1,120 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"files": {
+		"includes": [
+			"*.{ts,js,cjs,mjs,json,jsonc}",
+			"shared/**/*.*",
+			"app/**/*.*",
+			"server/**/*.*",
+			".vscode/**/*.*",
+			"!package.json",
+			"!.vscode/vue.code-snippets"
+		],
+		"maxSize": 2097152
+	},
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": false,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"domains": {
+			"vue": "recommended",
+			"test": "recommended"
+		},
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noForEach": "on",
+				"useIndexOf": "on"
+			},
+			"correctness": {
+				"useGraphqlNamedOperations": "on"
+			},
+			"nursery": {
+				"noFloatingPromises": "on",
+				"noImportCycles": "on",
+				"noMisusedPromises": "on",
+				"noNonNullAssertedOptionalChain": "on"
+			},
+			"style": {
+				"noUselessElse": "off",
+				"noUnusedTemplateLiteral": "on",
+				"noInferrableTypes": "on",
+				"noParameterAssign": "on",
+				"useAsConstAssertion": "on",
+				"useEnumInitializers": "on",
+				"useCollapsedIf": "on",
+				"useConsistentObjectDefinitions": "on",
+				"useDefaultParameterLast": "off",
+				"useExplicitLengthCheck": "on",
+				"useImportType": "on",
+				"useNumberNamespace": "on"
+			},
+			"suspicious": {
+				"noConsole": "on",
+				"noThenProperty": "off",
+				"noUnknownAtRules": "off",
+				"useAwait": "on"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"semicolons": "asNeeded",
+			"lineWidth": 100,
+			"quoteStyle": "single"
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					},
+					"style": { "useConst": "off", "useImportType": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["app/utils/**/*.ts", "shared/**/*.ts"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"useTopLevelRegex": "on"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.spec.ts", "**/*.bench.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					},
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"performance": {
+						"useTopLevelRegex": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [".vscode/settings.json"],
+			"assist": {
+				"actions": {
+					"source": {
+						"useSortedKeys": "on"
+					}
+				}
+			}
+		}
+	]
+}
