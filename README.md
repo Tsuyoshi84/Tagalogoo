@@ -1,75 +1,61 @@
-# Nuxt Minimal Starter
+# Tagalogoo
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A modern Tagalog learning application built with Nuxt 4 and Supabase.
+
+## Features
+
+- Interactive Tagalog lessons and exercises
+- Progress tracking and user authentication
+- Modern, responsive design with Tailwind CSS
+- Real-time data synchronization with Supabase
+- TypeScript support for better development experience
+
+## Tech Stack
+
+- **Frontend**: Nuxt 4, Vue 3, TypeScript
+- **Styling**: Tailwind CSS 4
+- **Backend**: Supabase (Database, Authentication, Real-time)
+- **Testing**: Vitest
+- **Code Quality**: ESLint, Biome, Lefthook
+- **Package Manager**: pnpm
 
 ## Setup
 
-Make sure to install dependencies:
+1. Install dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+2. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Add your Supabase project credentials to the `.env` file.
+
+## Development
 
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+## Scripts
 
-Build the application for production:
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm preview` - Preview production build
+- `pnpm lint` - Run ESLint
+- `pnpm check` - Run Biome checks
+- `pnpm test` - Run tests with Vitest
+- `pnpm typecheck` - Run TypeScript type checking
 
-```bash
-# npm
-npm run build
+## Project Structure
 
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+├── app/                 # Nuxt app directory
+└── supabase/          # Supabase configuration (if applicable)
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
