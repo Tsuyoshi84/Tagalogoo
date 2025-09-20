@@ -1,0 +1,13 @@
+---
+description: Rules for domain logic
+globs: app/domain/**/*.ts
+alwaysApply: false
+---
+# Rules for domain logic
+
+- Store business logic and rules in this directory.
+- Do NOT import from `app/composables` or `app/stores`.
+- Do NOT depend on the Vue reactivity system.
+- Use clear and descriptive names.
+- Add JSDoc comments. Put `@example` tags to illustrate usage if applicable.
+- Provide unit tests.
