@@ -9,7 +9,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "check": "biome check --write",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@nuxt/eslint": "1.9.0",
@@ -23,6 +25,7 @@
   },
   "packageManager": "pnpm@8.13.1+sha256.9e5f62ce5f2b7d4ceb3c2848f41cf0b33032c24d683c7088b53f62b1885fb246",
   "devDependencies": {
+    "@biomejs/biome": "2.2.4",
     "@vueuse/core": "^13.9.0",
     "@vueuse/nuxt": "^13.9.0"
   }
