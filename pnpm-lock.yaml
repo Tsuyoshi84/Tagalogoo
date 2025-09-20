@@ -25,7 +25,7 @@ dependencies:
     version: 9.36.0
   nuxt:
     specifier: ^4.1.2
-    version: 4.1.2(@biomejs/biome@2.2.4)(@vue/compiler-sfc@3.5.21)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)
+    version: 4.1.2(@biomejs/biome@2.2.4)(@vue/compiler-sfc@3.5.21)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)(vue-tsc@3.0.7)
   tailwindcss:
     specifier: ^4.1.13
     version: 4.1.13
@@ -49,6 +49,12 @@ devDependencies:
   lefthook:
     specifier: ^1.13.1
     version: 1.13.1
+  typescript:
+    specifier: ^5.9.2
+    version: 5.9.2
+  vue-tsc:
+    specifier: ^3.0.7
+    version: 3.0.7(typescript@5.9.2)
 
 packages:
 
@@ -1362,7 +1368,7 @@ packages:
       - typescript
     dev: false
 
-  /@nuxt/vite-builder@4.1.2(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vue@3.5.21):
+  /@nuxt/vite-builder@4.1.2(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vue-tsc@3.0.7)(vue@3.5.21):
     resolution: {integrity: sha512-to9NKVtzMBtyuhIIVgwo/ph5UCONcxkVsoAjm8HnSkDi0o9nDPhHOAg1AUMlvPnHpdXOzwnSrXo/t8E7W+UZ/A==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
@@ -1395,7 +1401,7 @@ packages:
       unenv: 2.0.0-rc.21
       vite: 7.1.6(jiti@2.5.1)
       vite-node: 3.2.4(jiti@2.5.1)
-      vite-plugin-checker: 0.10.3(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)
+      vite-plugin-checker: 0.10.3(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)(vue-tsc@3.0.7)
       vue: 3.5.21(typescript@5.9.2)
       vue-bundle-renderer: 2.1.2
     transitivePeerDependencies:
@@ -2809,6 +2815,13 @@ packages:
   /@volar/source-map@2.4.23:
     resolution: {integrity: sha512-Z1Uc8IB57Lm6k7q6KIDu/p+JWtf3xsXJqAX/5r18hYOTpJyBn0KXUR8oTJ4WFYOcDzWC9n3IflGgHowx6U6z9Q==}
 
+  /@volar/typescript@2.4.23:
+    resolution: {integrity: sha512-lAB5zJghWxVPqfcStmAP1ZqQacMpe90UrP5RJ3arDyrhy4aCUQqmxPPLB2PWDKugvylmO41ljK7vZ+t6INMTag==}
+    dependencies:
+      '@volar/language-core': 2.4.23
+      path-browserify: 1.0.1
+      vscode-uri: 3.1.0
+
   /@vue-macros/common@3.0.0-beta.16(vue@3.5.21):
     resolution: {integrity: sha512-8O2gWxWFiaoNkk7PGi0+p7NPGe/f8xJ3/INUufvje/RZOs7sJvlI1jnR4lydtRFa/mU0ylMXUXXjSK0fHDEYTA==}
     engines: {node: '>=20.18.0'}
@@ -3011,7 +3024,7 @@ packages:
       '@vueuse/core': 13.9.0(vue@3.5.21)
       '@vueuse/metadata': 13.9.0
       local-pkg: 1.1.2
-      nuxt: 4.1.2(@biomejs/biome@2.2.4)(@vue/compiler-sfc@3.5.21)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)
+      nuxt: 4.1.2(@biomejs/biome@2.2.4)(@vue/compiler-sfc@3.5.21)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)(vue-tsc@3.0.7)
       vue: 3.5.21(typescript@5.9.2)
     transitivePeerDependencies:
       - magicast
@@ -5629,7 +5642,7 @@ packages:
     dependencies:
       boolbase: 1.0.0
 
-  /nuxt@4.1.2(@biomejs/biome@2.2.4)(@vue/compiler-sfc@3.5.21)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6):
+  /nuxt@4.1.2(@biomejs/biome@2.2.4)(@vue/compiler-sfc@3.5.21)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)(vue-tsc@3.0.7):
     resolution: {integrity: sha512-g5mwszCZT4ZeGJm83nxoZvtvZoAEaY65VDdn7p7UgznePbRaEJJ1KS1OIld4FPVkoDZ8TEVuDNqI9gUn12Exvg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -5648,7 +5661,7 @@ packages:
       '@nuxt/kit': 4.1.2
       '@nuxt/schema': 4.1.2
       '@nuxt/telemetry': 2.6.6
-      '@nuxt/vite-builder': 4.1.2(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vue@3.5.21)
+      '@nuxt/vite-builder': 4.1.2(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vue-tsc@3.0.7)(vue@3.5.21)
       '@unhead/vue': 2.0.17(vue@3.5.21)
       '@vue/shared': 3.5.21
       c12: 3.3.0(magicast@0.3.5)
@@ -7434,7 +7447,7 @@ packages:
       - tsx
       - yaml
 
-  /vite-plugin-checker@0.10.3(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6):
+  /vite-plugin-checker@0.10.3(@biomejs/biome@2.2.4)(eslint@9.36.0)(typescript@5.9.2)(vite@7.1.6)(vue-tsc@3.0.7):
     resolution: {integrity: sha512-f4sekUcDPF+T+GdbbE8idb1i2YplBAoH+SfRS0e/WRBWb2rYb1Jf5Pimll0Rj+3JgIYWwG2K5LtBPCXxoibkLg==}
     engines: {node: '>=14.16'}
     peerDependencies:
@@ -7481,6 +7494,7 @@ packages:
       typescript: 5.9.2
       vite: 7.1.6(jiti@2.5.1)
       vscode-uri: 3.1.0
+      vue-tsc: 3.0.7(typescript@5.9.2)
 
   /vite-plugin-inspect@11.3.3(@nuxt/kit@3.19.2)(vite@7.1.6):
     resolution: {integrity: sha512-u2eV5La99oHoYPHE6UvbwgEqKKOQGz86wMg40CCosP6q8BkB6e5xPneZfYagK4ojPJSj5anHCrnvC20DpwVdRA==}
@@ -7624,6 +7638,16 @@ packages:
     dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.21(typescript@5.9.2)
+
+  /vue-tsc@3.0.7(typescript@5.9.2):
+    resolution: {integrity: sha512-BSMmW8GGEgHykrv7mRk6zfTdK+tw4MBZY/x6fFa7IkdXK3s/8hQRacPjG9/8YKFDIWGhBocwi6PlkQQ/93OgIQ==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=5.0.0'
+    dependencies:
+      '@volar/typescript': 2.4.23
+      '@vue/language-core': 3.0.7(typescript@5.9.2)
+      typescript: 5.9.2
 
   /vue@3.5.21(typescript@5.9.2):
     resolution: {integrity: sha512-xxf9rum9KtOdwdRkiApWL+9hZEMWE90FHh8yS1+KJAiWYh+iGWV1FquPjoO9VUHQ+VIhsCXNNyZ5Sf4++RVZBA==}

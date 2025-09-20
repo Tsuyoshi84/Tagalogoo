@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "vue-tsc --noEmit",
     "check": "biome check --write",
     "format": "biome format --write ."
   },
@@ -30,6 +31,8 @@
     "@biomejs/biome": "2.2.4",
     "@vueuse/core": "^13.9.0",
     "@vueuse/nuxt": "^13.9.0",
-    "lefthook": "^1.13.1"
+    "lefthook": "^1.13.1",
+    "typescript": "^5.9.2",
+    "vue-tsc": "^3.0.7"
   }
 }
