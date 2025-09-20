@@ -8,5 +8,12 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/test-utils',
     '@nuxt/image'
-  ]
+  ],
+  eslint: {
+		config: {
+			nuxt: {
+				sortConfigKeys: true,
+			},
+		},
+	},
 })
