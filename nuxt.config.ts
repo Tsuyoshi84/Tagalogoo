@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/test-utils',
-    '@nuxt/image'
+    '@nuxt/image',
+    '@vueuse/nuxt'
   ],
   eslint: {
 		config: {
