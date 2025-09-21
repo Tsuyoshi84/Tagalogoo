@@ -1,9 +1,9 @@
 import type { ComputedRef, Ref } from 'vue'
 import { computed, ref } from 'vue'
 import { useRuntimeConfig, useSupabaseClient, useSupabaseUser } from '#imports'
-import { buildGoogleOAuthRedirect, createGoogleOAuthQueryParams } from '~/domain/auth/google'
+import { buildGoogleOAuthRedirect } from '~/domain/auth/google.ts'
 
-interface UseGoogleAuthResult {
+interface UseGoogleAuthReturnType {
 	readonly signInWithGoogle: () => Promise<void>
 	readonly signOut: () => Promise<void>
 	readonly isPending: Ref<boolean>
@@ -24,7 +24,7 @@ function toErrorMessage(error: unknown): string {
 	return 'Something went wrong while contacting Google. Please try again.'
 }
 
-export function useGoogleAuth(): UseGoogleAuthResult {
+export function useGoogleAuth(): UseGoogleAuthReturnType {
 	const supabaseClient = useSupabaseClient()
 	const user = useSupabaseUser()
 	const isPending = ref(false)
@@ -45,14 +45,14 @@ export function useGoogleAuth(): UseGoogleAuthResult {
 			const redirectPath = runtimeConfig.public.supabase?.redirectOptions?.callback as
 				| string
 				| undefined
-			const redirectTo = buildGoogleOAuthRedirect({ origin: window.location.origin, redirectPath })
-			const queryParams = createGoogleOAuthQueryParams(runtimeConfig.public.googleOAuthClientId)
+			const redirectTo = buildGoogleOAuthRedirect({
+				origin: window.location.origin,
+				redirectPath,
+			})
 
 			const { error } = await supabaseClient.auth.signInWithOAuth({
 				options: {
-					flow: 'pkce',
 					redirectTo,
-					queryParams,
 				},
 				provider: 'google',
 			})
