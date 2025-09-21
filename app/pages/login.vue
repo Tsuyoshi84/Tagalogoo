@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * Login page
+ */
+
 import { computed, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { useGoogleAuth } from '~/composables/useGoogleAuth'

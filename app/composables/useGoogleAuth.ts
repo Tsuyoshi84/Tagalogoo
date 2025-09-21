@@ -96,9 +96,7 @@ export function useGoogleAuth(): UseGoogleAuthReturnType {
 		errorMessage.value = null
 
 		try {
-			const redirectPath = runtimeConfig.public.supabase?.redirectOptions?.callback as
-				| string
-				| undefined
+			const redirectPath = runtimeConfig.public.supabase?.redirectOptions?.callback
 			const redirectTo = buildGoogleOAuthRedirect({
 				origin: window.location.origin,
 				redirectPath,

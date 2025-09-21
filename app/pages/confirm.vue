@@ -1,4 +1,11 @@
 <script setup lang="ts">
+/**
+ * OAuth callback confirmation page
+ *
+ * Handles the final step of Google OAuth authentication by exchanging
+ * the authorization code for a Supabase session and redirecting the user.
+ */
+
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { navigateTo, useSupabaseClient, useSupabaseCookieRedirect, useSupabaseUser } from '#imports'
