@@ -32,8 +32,8 @@ If you are cloning the repo to contribute, expect placeholder UI and minimal run
    ```
 
 2. **Configure environment variables**
-   - Copy `.env.example` to `.env` if present, or create `.env` manually.
-   - When Supabase integration lands you will need keys such as `NUXT_PUBLIC_SUPABASE_URL` and `NUXT_PUBLIC_SUPABASE_ANON_KEY`.
+   - Copy `.env.example` to `.env` and update it with your Supabase project credentials.
+   - Provide `SUPABASE_URL` and `SUPABASE_KEY` values from the [Supabase dashboard](https://app.supabase.com/) (see the [Nuxt Supabase docs](https://supabase.nuxtjs.org/getting-started/introduction) for guidance).
 3. **Start the development server**
 
    ```bash
