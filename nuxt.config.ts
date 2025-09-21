@@ -30,11 +30,7 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	css: ['~/assets/css/main.css'],
 	runtimeConfig: {
-		public: {
-			supabaseKey: process.env.SUPABASE_KEY ?? '',
-			supabaseUrl: process.env.SUPABASE_URL ?? '',
-			googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID ?? '',
-		},
+		public: {},
 	},
 	devServer: {
 		port: 3123,
