@@ -19,9 +19,22 @@ const tsConfig = {
 }
 
 export default defineNuxtConfig({
-	modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/test-utils', '@nuxt/image', '@vueuse/nuxt'],
+	modules: [
+		'@nuxt/eslint',
+		'@nuxt/fonts',
+		'@nuxt/test-utils',
+		'@nuxt/image',
+		'@nuxtjs/supabase',
+		'@vueuse/nuxt',
+	],
 	devtools: { enabled: true },
 	css: ['~/assets/css/main.css'],
+	runtimeConfig: {
+		public: {},
+	},
+	devServer: {
+		port: 3123,
+	},
 	experimental: {
 		typedPages: true,
 	},
@@ -30,15 +43,22 @@ export default defineNuxtConfig({
 		plugins: [tailwindcss()],
 	},
 	typescript: {
-		tsConfig,
-		sharedTsConfig: tsConfig,
 		nodeTsConfig: tsConfig,
+		sharedTsConfig: tsConfig,
+		tsConfig,
 	},
 	eslint: {
 		config: {
 			nuxt: {
 				sortConfigKeys: true,
 			},
+		},
+	},
+	supabase: {
+		redirectOptions: {
+			callback: '/confirm',
+			login: '/login',
+			saveRedirectToCookie: true,
 		},
 	},
 })

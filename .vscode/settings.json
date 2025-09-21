@@ -1,3 +1,81 @@
 {
-	"cSpell.words": ["Supabase"]
+	"[css]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[html]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[vue]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"cSpell.ignorePaths": [
+		"package-lock.json",
+		"node_modules",
+		"vscode-extension",
+		".git/objects",
+		".vscode",
+		".vscode-insiders",
+		".devcontainer",
+		"app/database-generated.types.ts"
+	],
+	"cSpell.words": [
+		"Comfortaa",
+		"composables",
+		"Gabarito",
+		"nuxi",
+		"nuxt",
+		"nuxtjs",
+		"oklch",
+		"oxlint",
+		"pinia",
+		"stylelint",
+		"supabase",
+		"typecheck",
+		"Vali",
+		"Valibot",
+		"vitest",
+		"vueuse"
+	],
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit"
+	},
+	"editor.formatOnSave": true,
+	"editor.quickSuggestions": {
+		"strings": "on"
+	},
+	"eslint.useFlatConfig": true,
+	"explorer.fileNesting.enabled": true,
+	"explorer.fileNesting.expand": false,
+	"explorer.fileNesting.patterns": {
+		"*.js": "$(capture).js.map, $(capture).*.js, $(capture)_*.js",
+		"*.jsx": "$(capture).js, $(capture).*.jsx, $(capture)_*.js, $(capture)_*.jsx",
+		"*.ts": "$(capture).js, $(capture).d.ts.map, $(capture).*.ts, $(capture)_*.js, $(capture)_*.ts",
+		"*.tsx": "$(capture).ts, $(capture).*.tsx, $(capture)_*.ts, $(capture)_*.tsx",
+		"*.vue": "$(capture).*.ts, $(capture).*.js, $(capture).story.vue"
+	},
+	"files.autoSave": "afterDelay",
+	"files.autoSaveDelay": 1000,
+	"files.autoSaveWhenNoErrors": true,
+	"github.copilot.chat.codeGeneration.instructions": [
+		{
+			"file": "coding-guidelines.md"
+		}
+	],
+	"javascript.preferences.importModuleSpecifierEnding": "js",
+	"typescript.preferences.importModuleSpecifierEnding": "js",
+	"typescript.preferences.preferTypeOnlyAutoImports": true,
+	"typescript.preferGoToSourceDefinition": true,
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"vue.inlayHints.inlineHandlerLeading": true,
+	"vue.inlayHints.missingProps": true,
+	"vue.inlayHints.optionsWrapper": true
 }
