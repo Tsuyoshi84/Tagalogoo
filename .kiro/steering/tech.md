@@ -3,18 +3,34 @@
 ## Framework & Core Technologies
 
 - **Framework**: Nuxt 4 with Vue 3 and TypeScript
-- **Styling**: Tailwind CSS 4 via `@tailwindcss/vite` plugin
+- **Styling**: Tailwind CSS 4 via `@tailwindcss/vite` plugin + DaisyUI components
 - **Backend**: Supabase (authentication, database, real-time)
 - **Package Manager**: pnpm 10.17+ (required)
 - **Node Version**: 22.x (see `.tool-versions`)
 
 ## Key Dependencies
 
-- **UI/UX**: `@nuxt/image`, `@nuxt/fonts`, `@vueuse/nuxt`
+- **UI/UX**: `@nuxt/image`, `@nuxt/fonts`, `@vueuse/nuxt`, DaisyUI, Lucide Vue Next
 - **Auth**: `@nuxtjs/supabase` with Google OAuth
 - **Testing**: Vitest with `@nuxt/test-utils`
 - **Code Quality**: ESLint (`@nuxt/eslint`), Biome, vue-tsc
 - **Git Hooks**: Lefthook for pre-commit checks
+
+## UI Component Libraries
+
+### DaisyUI
+
+- Semantic component classes built on Tailwind CSS
+- Pre-built components: buttons, cards, modals, forms, etc.
+- Use component classes like `btn`, `card`, `modal` in templates
+- Configured as Tailwind plugin in `nuxt.config.ts`
+
+### Lucide Vue Next
+
+- Feather-inspired icon library for Vue 3
+- Import icons individually: `import { User, Mail, Settings } from 'lucide-vue-next'`
+- Use as components: `<User class="w-4 h-4" />`
+- Optimized with tree-shaking for minimal bundle size
 
 ## Development Server
 
