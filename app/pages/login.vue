@@ -3,6 +3,7 @@
  * Login page
  */
 
+import { LogOut, Shield } from 'lucide-vue-next'
 import { computed, watch } from 'vue'
 import { navigateTo } from '#imports'
 import { useGoogleAuth } from '~/composables/useGoogleAuth'
@@ -42,47 +43,60 @@ async function handleSignOut(): Promise<void> {
 </script>
 
 <template>
-	<main
-		class="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-900 px-4 py-12 text-slate-100"
-	>
-		<section class="flex max-w-md flex-col items-center gap-4 text-center">
-			<h1 class="text-3xl font-semibold sm:text-4xl">Sign in to Tagalogoo</h1>
-			<p class="text-base text-slate-300">
-				Use your Google account to access lessons, track progress, and sync
-				learning data securely with Supabase Auth.
-			</p>
-		</section>
+	<main class="hero min-h-screen bg-base-200">
+		<div class="hero-content text-center">
+			<div class="max-w-md">
+				<div class="flex flex-col items-center gap-4 mb-8">
+					<div class="flex items-center gap-2">
+						<Shield class="w-8 h-8 text-primary" />
+						<h1 class="text-4xl font-bold">Tagalogoo</h1>
+					</div>
+					<p class="text-lg opacity-70">
+						Use your Google account to access lessons, track progress, and sync
+						learning data securely.
+					</p>
+				</div>
 
-		<section class="flex w-full max-w-sm flex-col items-stretch gap-3">
-			<button
-				v-if="!isAuthenticated"
-				type="button"
-				class="inline-flex items-center justify-center gap-3 rounded-lg bg-white px-4 py-3 font-medium text-slate-900 shadow transition hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-60"
-				:disabled="isPending"
-				@click="handleGoogleSignIn"
-			>
-				<span class="h-6 w-6">
-					<img alt="Google logo" class="h-full w-full" src="/google-logo.svg" />
-				</span>
-				<span>{{ isPending ? "Connecting…" : "Continue with Google" }}</span>
-			</button>
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body">
+						<h2 class="card-title justify-center mb-4">Welcome back!</h2>
 
-			<button
-				v-else
-				type="button"
-				class="inline-flex items-center justify-center gap-3 rounded-lg border border-slate-500 px-4 py-3 font-medium text-slate-100 transition hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-				@click="handleSignOut"
-			>
-				Sign out {{ displayName }}
-			</button>
+						<div class="card-actions justify-center">
+							<button
+								v-if="!isAuthenticated"
+								type="button"
+								class="btn btn-primary btn-wide"
+								:class="{ 'btn-disabled loading': isPending }"
+								:disabled="isPending"
+								@click="handleGoogleSignIn"
+							>
+								<span class="w-5 h-5">
+									<img alt="Google logo" class="w-full h-full" src="/google-logo.svg" />
+								</span>
+								{{ isPending ? "Connecting…" : "Continue with Google" }}
+							</button>
 
-			<p
-				v-if="errorMessage"
-				class="rounded-lg border border-red-400 bg-red-900/40 px-3 py-2 text-sm text-red-200"
-				role="alert"
-			>
-				{{ errorMessage }}
-			</p>
-		</section>
+							<button
+								v-else
+								type="button"
+								class="btn btn-outline btn-wide"
+								@click="handleSignOut"
+							>
+								<LogOut class="w-4 h-4" />
+								Sign out {{ displayName }}
+							</button>
+						</div>
+
+						<div
+							v-if="errorMessage"
+							class="alert alert-error mt-4"
+							role="alert"
+						>
+							<span>{{ errorMessage }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</main>
 </template>
