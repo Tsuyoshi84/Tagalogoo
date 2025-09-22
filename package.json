@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "tagalogoo",
   "type": "module",
   "private": true,
   "scripts": {
@@ -22,7 +22,9 @@
     "@nuxt/test-utils": "3.19.2",
     "@nuxtjs/supabase": "^1.6.2",
     "@tailwindcss/vite": "^4.1.13",
+    "daisyui": "^5.1.14",
     "eslint": "^9.0.0",
+    "lucide-vue-next": "^0.544.0",
     "nuxt": "^4.1.2",
     "tailwindcss": "^4.1.13",
     "vue": "^3.5.21",

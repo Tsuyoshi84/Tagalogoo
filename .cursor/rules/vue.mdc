@@ -58,13 +58,14 @@ Concise standards for authoring Vue SFCs in this project.
 ## Template Rules
 
 - Use semantic HTML elements; avoid redundant `role` when native semantics suffice.
+- Prefer DaisyUI component classes for UI elements: `<button class="btn btn-primary">`, `<div class="card">`, `<input class="input input-bordered">`.
 - Stable `:key` from domain identifiers (never loop index for mutable lists).
 - Prefer `v-show` for rapid toggle of the same element; use `v-if` for conditional mount/unmount.
 - Do not allocate new objects/arrays inline in hot paths; precompute in script.
 - Images: add `loading="lazy"` when not immediately needed.
 - Use `<time>` for time data. Pass route objects to `<NuxtLink :to="{ name: 'route-name' }">`.
 - Access props in template via `props.x` for consistency.
-- Do not use a `tw()` helper/function inside templates; prefer plain Tailwind utility class strings for zero runtime overhead.
+- Do not use a `tw()` helper/function inside templates; prefer plain DaisyUI and Tailwind utility class strings for zero runtime overhead.
 
 ## Accessibility
 
@@ -105,8 +106,19 @@ Concise standards for authoring Vue SFCs in this project.
 
 ## Styling
 
-- Prefer Tailwind utilities; omit `<style>` entirely unless: third‑party override, complex animation, or selector impossible via utilities. If used, add a leading comment explaining why.
+- Prefer DaisyUI semantic component classes over raw Tailwind utilities for UI components (buttons, cards, modals, etc.).
+- Use DaisyUI's semantic naming: `btn`, `btn-primary`, `card`, `card-body`, `modal`, `input`, `select`, etc.
+- Combine DaisyUI classes with Tailwind utilities for spacing, sizing, and responsive behavior.
+- Omit `<style>` entirely unless: third‑party override, complex animation, or selector impossible via utilities. If used, add a leading comment explaining why.
 - Keep class lists readable; if repetition grows, extract a smaller component or utility.
+
+## Icons
+
+- Use Lucide icons for all iconography; import explicitly: `import { IconName } from 'lucide-vue-next'`.
+- Prefer semantic icon names that match their purpose (e.g., `User`, `Settings`, `ChevronDown`).
+- Use appropriate icon sizes: `size="16"` for small UI elements, `size="20"` for standard, `size="24"` for prominent actions.
+- Apply consistent stroke width: `stroke-width="1.5"` for most icons, `stroke-width="2"` for emphasis.
+- Use `class` prop for DaisyUI color utilities: `class="text-primary"`, `class="text-error"`, etc.
 
 ## Testing
 
