@@ -5,6 +5,7 @@
 - **Framework**: Nuxt 4 with Vue 3 and TypeScript
 - **Styling**: Tailwind CSS 4 via `@tailwindcss/vite` plugin + DaisyUI components
 - **Backend**: Supabase (authentication, database, real-time)
+- **Database ORM**: Drizzle ORM with PostgreSQL driver
 - **Package Manager**: pnpm 10.17+ (required)
 - **Node Version**: 22.x (see `.tool-versions`)
 
@@ -12,6 +13,7 @@
 
 - **UI/UX**: `@nuxt/image`, `@nuxt/fonts`, `@vueuse/nuxt`, DaisyUI, Lucide Vue Next
 - **Auth**: `@nuxtjs/supabase` with Google OAuth
+- **Database**: `drizzle-orm`, `postgres`, `drizzle-kit` for schema management
 - **Testing**: Vitest with `@nuxt/test-utils`
 - **Code Quality**: ESLint (`@nuxt/eslint`), Biome, vue-tsc
 - **Git Hooks**: Lefthook for pre-commit checks
@@ -84,6 +86,15 @@ pnpm typecheck    # Full TypeScript type checking
 
 ```bash
 pnpm test         # Run Vitest tests
+```
+
+### Database
+
+```bash
+pnpm db:generate  # Generate migrations from schema
+pnpm db:migrate   # Run migrations
+pnpm db:push      # Push schema directly to database
+pnpm db:studio    # Open Drizzle Studio
 ```
 
 ### Setup
