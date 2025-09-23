@@ -72,7 +72,7 @@
 		}
 	],
 	"javascript.preferences.importModuleSpecifierEnding": "js",
-	"kiroAgent.configureMCP": "Disabled",
+	"kiroAgent.configureMCP": "Enabled",
 	"typescript.preferences.importModuleSpecifierEnding": "js",
 	"typescript.preferences.preferTypeOnlyAutoImports": true,
 	"typescript.preferGoToSourceDefinition": true,
