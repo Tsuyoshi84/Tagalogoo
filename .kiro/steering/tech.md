@@ -32,6 +32,27 @@
 - Use as components: `<User class="w-4 h-4" />`
 - Optimized with tree-shaking for minimal bundle size
 
+## Browser & Device Support
+
+### Target Browsers
+
+- **Chrome**: Latest version (primary target)
+- **Edge**: Latest version (primary target)
+- Modern browsers with ES2022+ support
+
+### Device Support
+
+- **Mobile-first**: Responsive design for mobile devices
+- **Desktop**: Full desktop experience
+- **Touch interfaces**: Optimized for touch interactions
+
+### Theme Support
+
+- **Light mode**: Default theme
+- **Dark mode**: Full dark theme support
+- **System preference**: Respects user's OS theme setting
+- Use DaisyUI theme system for consistent theming
+
 ## Development Server
 
 - Runs on port 3123 (configured in `nuxt.config.ts`)
