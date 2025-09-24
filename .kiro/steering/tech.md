@@ -113,10 +113,15 @@ pnpm install     # Install dependencies
 
 ### Schema & Migrations
 
-- **Schema Definition**: Use Drizzle ORM for schema definition and type generation
-- **Migrations**: Apply migrations via Drizzle, including RLS policies via raw SQL
-- **Version Control**: Keep all migrations under version control
-- **Single Source of Truth**: Drizzle schema is the authoritative source for database structure
+- **Schema Definition**: Use Drizzle ORM (`schema.ts`) as the authoritative source of truth for table and column definitions
+- **Migration Workflow**:
+  1. Define or update `schema.ts`
+  2. Run `drizzle-kit generate` to produce SQL
+  3. Create a Supabase migration file via `supabase migration new <name>`
+  4. Copy Drizzle’s generated SQL into that file, then add RLS policies/triggers/functions manually as needed
+  5. Apply migrations to **remote Supabase** via `supabase db push`
+- **Version Control**: Commit all migration files under version control
+- **Single Source of Truth**: Drizzle schema remains the source; migration files are the history applied to Supabase
 
 ### Data Access Patterns
 
@@ -124,18 +129,18 @@ pnpm install     # Install dependencies
 
 - **Always use Supabase JS client** - never Drizzle, never direct database connections
 - All queries automatically subject to Row Level Security (RLS)
-- Type-safe queries using generated TypeScript types from Drizzle schema
+- Type-safe queries via TypeScript types generated from Drizzle schema
 
 #### Nuxt Server Routes / API Handlers
 
 - **Primary**: Use Supabase JS client for queries (enforces RLS)
 - **Alternative**: Use Drizzle with Supabase adapter for type-safe queries (still enforces RLS)
-- Server-side queries still subject to RLS when using proper authentication
+- Server-side queries remain subject to RLS when using authenticated Supabase client
 
 #### Admin / Batch Jobs / Complex SQL
 
-- Use Drizzle with postgres-js or node-postgres + Supabase service role
-- **Critical**: Must enforce your own authorization - service role bypasses RLS
+- Use Drizzle with `postgres-js` or `node-postgres` + Supabase service role
+- **Critical**: Service role bypasses RLS, so enforce your own authorization
 - Only safe for trusted server-only tasks
 
 ### Row Level Security (RLS)
@@ -143,22 +148,22 @@ pnpm install     # Install dependencies
 - **Always enabled** on user-facing tables
 - Supabase client queries (browser or server) automatically subject to RLS
 - Service role queries bypass RLS → only use for trusted operations
-- Apply RLS policies in migrations via raw SQL
+- Apply RLS policies in migration files (SQL blocks after Drizzle DDL)
 
 ### Type Safety
 
 - Generate TypeScript types from Drizzle schema
 - Use Zod for runtime validation at API boundaries (form inputs, Supabase responses, external APIs)
 - Never duplicate schema definitions - Drizzle is single source of truth
-- Zod schemas provide runtime type checking and validation for data at application boundaries
+- Zod schemas provide runtime validation at application edges
 
 ### Security Rules
 
-❌ **Never** connect Drizzle directly to database from client/browser
-❌ **Never** expose Supabase service role key to client code
-❌ **Never** duplicate schema definitions
-✅ **Always** use Supabase client for user-facing queries
-✅ **Always** enable RLS on user tables
+❌ **Never** connect Drizzle directly to database from client/browser  
+❌ **Never** expose Supabase service role key to client code  
+❌ **Never** duplicate schema definitions  
+✅ **Always** use Supabase client for user-facing queries  
+✅ **Always** enable RLS on user tables  
 ✅ **Always** validate data at API boundaries
 
 ## Code Style Configuration
