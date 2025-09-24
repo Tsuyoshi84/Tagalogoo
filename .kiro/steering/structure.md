@@ -5,17 +5,24 @@
 ```
 app/                    # Nuxt application source
 ├── assets/css/         # Tailwind CSS entry point
-├── components/         # Vue components (auto-imported)
-├── composables/        # Nuxt composables (auto-imported)
+├── components/         # Vue components 
+├── composables/        # Nuxt composables 
+├── layouts/            # Nuxt layouts
 ├── domain/             # Business logic (framework-agnostic)
 ├── middleware/         # Route middleware
 ├── pages/              # File-based routing
 ├── plugins/            # Auto-registered Nuxt plugins
+├── types/              # Types used in Vue app
 └── utils/              # Utility functions (auto-imported)
 
 server/                 # Nitro server routes & middleware
 ├── api/                # API endpoints
+├── database/           # Drizzle schemas and migrations
 └── middleware/         # Server middleware
+
+shared/                 # Shared by both Vue app and server
+├── types/              # Shared types
+└── utils/              # Shared utility functions
 
 public/                 # Static assets served as-is
 .nuxt/                  # Generated Nuxt files (auto-generated)
