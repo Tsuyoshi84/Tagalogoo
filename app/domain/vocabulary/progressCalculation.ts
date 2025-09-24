@@ -9,83 +9,75 @@ import type { ReviewData } from './spacedRepetition'
 
 /**
  * Study session statistics for a single learning session
- *
- * @interface SessionStats
- * @property cardsStudied - Total number of cards reviewed in session
- * @property correctAnswers - Number of cards answered correctly (quality >= 3)
- * @property accuracy - Percentage accuracy (0-100)
- * @property sessionDuration - Session length in seconds
- * @property newCardsLearned - Number of new cards learned (quality >= 3)
- * @property reviewsCompleted - Total reviews completed (same as cardsStudied)
  */
 export interface SessionStats {
+	/** Total number of cards reviewed in session */
 	cardsStudied: number
+	/** Number of cards answered correctly (quality >= 3) */
 	correctAnswers: number
+	/** Percentage accuracy (0-100) */
 	accuracy: number
-	sessionDuration: number // in seconds
+	/** Session length in seconds */
+	sessionDuration: number
+	/** Number of new cards learned (quality >= 3) */
 	newCardsLearned: number
+	/** Total reviews completed (same as cardsStudied) */
 	reviewsCompleted: number
 }
 
 /**
  * Overall progress statistics across all learning sessions
- *
- * @interface ProgressStats
- * @property totalCards - Total number of cards in the system
- * @property cardsLearned - Cards with at least one successful repetition
- * @property cardsMastered - Cards considered mastered (reps >= 3, ease >= 2.5)
- * @property averageAccuracy - Overall accuracy percentage across all reviews
- * @property currentStreak - Current consecutive correct answers
- * @property longestStreak - Longest streak of consecutive correct answers
- * @property totalStudyTime - Total time spent studying in seconds
- * @property totalReviews - Total number of reviews completed
  */
 export interface ProgressStats {
+	/** Total number of cards in the system */
 	totalCards: number
-	cardsLearned: number // Cards with reps > 0
-	cardsMastered: number // Cards with reps >= 3 and ease >= 2.5
+	/** Cards with at least one successful repetition */
+	cardsLearned: number
+	/** Cards considered mastered (reps >= 3, ease >= 2.5) */
+	cardsMastered: number
+	/** Overall accuracy percentage across all reviews */
 	averageAccuracy: number
+	/** Current consecutive correct answers */
 	currentStreak: number
+	/** Longest streak of consecutive correct answers */
 	longestStreak: number
-	totalStudyTime: number // in seconds
+	/** Total time spent studying in seconds */
+	totalStudyTime: number
+	/** Total number of reviews completed */
 	totalReviews: number
 }
 
 /**
  * Daily study statistics for tracking daily progress
- *
- * @interface DailyStats
- * @property date - The date these statistics represent
- * @property cardsStudied - Number of cards studied on this date
- * @property accuracy - Accuracy percentage for this date
- * @property studyTime - Time spent studying in seconds
- * @property newCards - Number of new cards learned
- * @property reviewCards - Number of review cards studied
  */
 export interface DailyStats {
+	/** The date these statistics represent */
 	date: Date
+	/** Number of cards studied on this date */
 	cardsStudied: number
+	/** Accuracy percentage for this date */
 	accuracy: number
-	studyTime: number // in seconds
+	/** Time spent studying in seconds */
+	studyTime: number
+	/** Number of new cards learned */
 	newCards: number
+	/** Number of review cards studied */
 	reviewCards: number
 }
 
 /**
  * Review outcome for tracking individual card review results
- *
- * @interface ReviewOutcome
- * @property cardId - Unique identifier for the card
- * @property quality - Quality rating given (1, 3, 4, or 5)
- * @property responseTime - Time taken to respond in milliseconds
- * @property timestamp - When the review occurred
- * @property wasCorrect - Whether the review was considered correct (quality >= 3)
  */
 export interface ReviewOutcome {
+	/** Unique identifier for the card */
 	cardId: string
+	/** Quality rating given (1, 3, 4, or 5) */
 	quality: number
-	responseTime: number // in milliseconds
+	/** Time taken to respond in milliseconds */
+	responseTime: number
+	/** When the review occurred */
 	timestamp: Date
+	/** Whether the review was considered correct (quality >= 3) */
 	wasCorrect: boolean
 }
 

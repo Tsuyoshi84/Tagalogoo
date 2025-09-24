@@ -22,39 +22,35 @@ export type QualityRating = (typeof QUALITY_RATINGS)[keyof typeof QUALITY_RATING
 
 /**
  * Review data structure for tracking individual flashcard progress
- *
- * @interface ReviewData
- * @property ease - Easiness factor (default 2.5, minimum 1.3)
- * @property intervalDays - Current interval in days until next review
- * @property reps - Number of successful repetitions completed
- * @property lapses - Number of times the card was forgotten (quality < 3)
- * @property nextDue - Next scheduled review date
- * @property lastReviewed - Optional timestamp of last review session
  */
 export interface ReviewData {
+	/** Easiness factor (default 2.5, minimum 1.3) */
 	ease: number
+	/** Current interval in days until next review */
 	intervalDays: number
+	/** Number of successful repetitions completed */
 	reps: number
+	/** Number of times the card was forgotten (quality < 3) */
 	lapses: number
+	/** Next scheduled review date */
 	nextDue: Date
+	/** Optional timestamp of last review session */
 	lastReviewed?: Date
 }
 
 /**
  * Result of calculating the next review schedule for a flashcard
- *
- * @interface ReviewResult
- * @property ease - Updated easiness factor after review
- * @property intervalDays - New interval in days until next review
- * @property reps - Updated repetition count
- * @property lapses - Updated lapse count
- * @property nextDue - Calculated next review date
  */
 export interface ReviewResult {
+	/** Updated easiness factor after review */
 	ease: number
+	/** New interval in days until next review */
 	intervalDays: number
+	/** Updated repetition count */
 	reps: number
+	/** Updated lapse count */
 	lapses: number
+	/** Calculated next review date */
 	nextDue: Date
 }
 
