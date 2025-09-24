@@ -94,7 +94,7 @@ pnpm test         # Run Vitest tests
 
 ```bash
 pnpm db:generate  # Generate migrations from Drizzle schema
-pnpm db:migrate   # Run migrations via Supabase CLI
+pnpm db:migrate   # Run migrations with Drizzle Kit
 pnpm db:push      # Push schema directly to database (dev only)
 pnpm db:studio    # Open Drizzle Studio
 ```
