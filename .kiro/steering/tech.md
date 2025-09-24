@@ -172,3 +172,11 @@ pnpm install     # Install dependencies
 - **Linting**: ESLint + Biome with strict Vue 3 Composition API rules
 - **TypeScript**: Strict mode with enhanced safety options
 - **Git Hooks**: Optional Lefthook setup for pre-commit quality checks
+
+## Post-Implementation Checks
+
+After implementing or updating code, Kiro must run the following commands before considering the task complete:
+
+- `pnpm check`      → verify project consistency
+- `pnpm typecheck`  → ensure TypeScript types are valid
+- `pnpm lint:fix`   → auto-fix lint issues and enforce style
