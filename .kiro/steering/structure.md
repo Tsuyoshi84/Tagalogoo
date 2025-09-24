@@ -18,6 +18,8 @@ app/                    # Nuxt application source
 server/                 # Nitro server routes & middleware
 ├── api/                # API endpoints
 ├── database/           # Drizzle schemas and migrations
+|   ├── migrations/     # Drizzle migration files
+|   └── schema.ts/      # Drizzle schema definitions
 └── middleware/         # Server middleware
 
 shared/                 # Shared by both Vue app and server

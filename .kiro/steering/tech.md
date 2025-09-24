@@ -16,6 +16,7 @@
 - **Auth**: `@nuxtjs/supabase` with Google OAuth
 - **Database Schema**: `drizzle-orm`, `drizzle-kit` for schema definition and migrations
 - **Data Access**: `@supabase/supabase-js` for all client-side and server-side queries
+- **Schema Validation**: `zod` for runtime type validation at API boundaries
 - **Testing**: Vitest with `@nuxt/test-utils`
 - **Code Quality**: ESLint (`@nuxt/eslint`), Biome, vue-tsc
 - **Git Hooks**: Lefthook for pre-commit checks
@@ -90,6 +91,8 @@ pnpm typecheck    # Full TypeScript type checking
 pnpm test         # Run Vitest tests
 ```
 
+**Test File Organization**: Test files must be co-located with their target files in the same directory (e.g., `ComponentName.spec.ts` alongside `ComponentName.vue`)
+
 ### Database
 
 ```bash
@@ -145,8 +148,9 @@ pnpm install     # Install dependencies
 ### Type Safety
 
 - Generate TypeScript types from Drizzle schema
-- Use Zod at API edges for runtime validation (form inputs, Supabase responses)
+- Use Zod for runtime validation at API boundaries (form inputs, Supabase responses, external APIs)
 - Never duplicate schema definitions - Drizzle is single source of truth
+- Zod schemas provide runtime type checking and validation for data at application boundaries
 
 ### Security Rules
 
