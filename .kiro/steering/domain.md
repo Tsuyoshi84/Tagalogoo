@@ -1,7 +1,6 @@
 ---
-description: Rules for domain logic
-globs: app/domain/**/*.ts
-alwaysApply: false
+fileMatchPattern: "app/domain/**/*.ts"
+inclusion: fileMatch
 ---
 # Rules for domain logic
 
