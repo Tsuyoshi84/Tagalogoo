@@ -116,12 +116,10 @@ pnpm install     # Install dependencies
 - **Schema Definition**: Use Drizzle ORM (`schema.ts`) as the authoritative source of truth for table and column definitions
 - **Migration Workflow**:
   1. Define or update `schema.ts`
-  2. Run `drizzle-kit generate` to produce SQL
-  3. Create a Supabase migration file via `supabase migration new <name>`
-  4. Copy Drizzle’s generated SQL into that file, then add RLS policies/triggers/functions manually as needed
-  5. Apply migrations to **remote Supabase** via `supabase db push`
+  2. Run `pnpm db:generate` to produce migration files
+  3. Run `pnpm db:migrate` to run migrations
 - **Version Control**: Commit all migration files under version control
-- **Single Source of Truth**: Drizzle schema remains the source; migration files are the history applied to Supabase
+- **Single Source of Truth**: Drizzle schema remains the source
 
 ### Data Access Patterns
 
@@ -148,7 +146,7 @@ pnpm install     # Install dependencies
 - **Always enabled** on user-facing tables
 - Supabase client queries (browser or server) automatically subject to RLS
 - Service role queries bypass RLS → only use for trusted operations
-- Apply RLS policies in migration files (SQL blocks after Drizzle DDL)
+- Apply RLS policies in `schema.ts`
 
 ### Type Safety
 
