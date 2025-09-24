@@ -38,6 +38,9 @@
 				"noMisusedPromises": "on",
 				"noNonNullAssertedOptionalChain": "on"
 			},
+			"performance": {
+				"noBarrelFile": "on"
+			},
 			"style": {
 				"noUselessElse": "off",
 				"noUnusedTemplateLiteral": "on",
@@ -86,6 +89,16 @@
 				"rules": {
 					"performance": {
 						"useTopLevelRegex": "on"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["app/domain/database/**/*.ts"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noBarrelFile": "off"
 					}
 				}
 			}
