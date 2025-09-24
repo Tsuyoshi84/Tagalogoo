@@ -14,7 +14,7 @@ Apply these rules when writing TypeScript files or Vue component setup functions
 - Prefer `interface` over `type` when defining object types.
 - Use literal union types over enums.
 - Use `unknown` over `any`.
-- Prefer `undefined` over `null` unless `null` has to be used. (e.g. when GraphQL schema gives `null` distinct meaning)
+- Prefer `undefined` over `null` unless `null` has to be used. (e.g. when schema gives `null` distinct meaning)
 - Prefer `for...of` statement over `forEach`. However, allow use of `forEach` when chaining.
 - Avoid non-null assertion operator (`!`) unless absolutely sure the value cannot be `null` or `undefined`. (Prefer type guards / `assert()` / early return)
 - Put `as const` on constant objects.
@@ -23,7 +23,6 @@ Apply these rules when writing TypeScript files or Vue component setup functions
 - Do not rely on Nuxt auto-import system. Import files explicitly.
 - Put .ts extension when importing TypeScript file defined in this codebase.
 - Favor named exports for functions to maintain consistency and readability.
-- When using Vue Apollo Client composables, use aliases by combining the original variable name with the query/mutation/subscription name. Queries: `loadXxx`, Mutations: `mutateXxx`, Subscriptions: `resultXxxSub`. For example:
 
 ```ts
 const { load: loadEvents, loading: loadingEvents, result: resultEvents } = useListEventsQuery()
@@ -90,7 +89,6 @@ Follow these instructions when writing composables or component setup functions.
 
 - Readonly intent: Mark collections and DTO-like structures `readonly` (properties, arrays, tuples) unless mutation is explicitly part of the API contract.
 - Minimal exposure from composables: Return the narrowest surface—prefer `readonly(ref)` or computed derivatives—so consumers cannot mutate internal state accidentally.
-- GraphQL type fidelity: Consume generated GraphQL types (queries, fragments, mutation vars) directly—never hand-roll duplicates even if shapes seem simple.
 - Avoid chained utility type noise: Replace stacked `Omit<Pick<...>>` constructs with a named type alias or a mapped type builder for clarity.
 - Single source literal unions: For shared literal sets, export a `const` array + derived union (`as const`) rather than duplicating union members across modules.
 - Domain validation boundary: Introduce a clear parsing/validation layer (schema or custom guards) to transform raw external input into a trusted domain type; never let unvalidated shapes propagate.
