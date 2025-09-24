@@ -6,7 +6,7 @@
   - Configure Row Level Security policies for data access control
   - _Requirements: All requirements depend on proper data storage_
 
-- [ ] 2. Create domain logic for spaced repetition system
+- [x] 2. Create domain logic for spaced repetition system
   - Implement SM-2 algorithm for calculating review intervals
   - Write functions for quality-based scheduling (Again=1, Hard=3, Good=4, Easy=5)
   - Create progress calculation utilities (accuracy, streaks, statistics)
