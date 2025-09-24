@@ -4,16 +4,7 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 export default withNuxt({
 	files: ['**/*.spec.ts', '**/*.test.ts'],
 	rules: {
-		'vitest/consistent-test-it': ['error', { fn: 'it' }],
-		'vitest/no-conditional-expect': 'error',
-		'vitest/no-conditional-in-test': 'error',
-		'vitest/prefer-each': 'error',
-		'vitest/expect-expect': 'off',
-		'vitest/valid-expect': 'off',
-		'unicorn/prefer-at': 'off',
-		'custom-rules/prefer-get-now': 'off',
-		'custom-rules/prefer-to-date': 'off',
-		'custom-rules/prefer-to-iso': 'off',
+		'@typescript-eslint/no-explicit-any': 'off',
 	},
 }).override('nuxt/vue/rules', {
 	rules: {

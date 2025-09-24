@@ -91,7 +91,7 @@
 			}
 		},
 		{
-			"includes": ["**/*.spec.ts", "**/*.bench.ts"],
+			"includes": ["**/*.spec.ts", "**/*.test.ts", "**/*.bench.ts"],
 			"linter": {
 				"rules": {
 					"style": {
