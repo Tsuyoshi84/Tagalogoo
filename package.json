@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "nuxt typecheck",
     "check": "biome check --write",
     "format": "biome format --write .",
     "test": "vitest",

@@ -1,7 +1,6 @@
 ---
-description: Rules for TypeScript
-globs: **/*.{ts,vue}
-alwaysApply: false
+fileMatchPattern: "**/*.{ts,vue}"
+inclusion: fileMatch
 ---
 # Rules for TypeScript
 

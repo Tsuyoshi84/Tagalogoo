@@ -1,7 +1,6 @@
 ---
-description: Rules for Vue Component test files
-globs: "app/components/**/*.spec.ts"
-alwaysApply: false
+fileMatchPattern: "app/components/**/*.spec.ts"
+inclusion: fileMatch
 ---
 # Rules for Vue Component tests
 
@@ -13,4 +12,4 @@ alwaysApply: false
 - Query by role/name/label first (getByRole, findByLabelText). Avoid test IDs.
 - Prefer testing for rendered text, roles, accessibility attributes, and actual behaviors.
 - Test for Tailwind classes only if they represent critical states or are public API for your component.
-- Don’t add an extra `expect` when using `getBy...` queries (e.g. `getByRole`, `getByLabelText`), since these already throw an error if the element is not found.
+- Don't add an extra `expect` when using `getBy...` queries (e.g. `getByRole`, `getByLabelText`), since these already throw an error if the element is not found.
