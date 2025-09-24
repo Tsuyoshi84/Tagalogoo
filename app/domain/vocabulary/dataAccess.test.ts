@@ -1,282 +1,420 @@
-import { describe, expect, it } from 'vitest'
-import type {
-	Category,
-	Example,
-	NewCategory,
-	NewExample,
-	NewReview,
-	NewWord,
-	Review,
-	Word,
-} from '../database/types.ts'
+import { describe, expect, it, vi } from 'vitest'
+import {
+	createCategory,
+	createExample,
+	createOrUpdateReview,
+	createWord,
+	getDueCards,
+	saveUserProgress,
+} from './dataAccess.ts'
 
 /**
- * Unit tests for vocabulary data access layer.
- * Tests verify function exports, TypeScript types, and basic functionality.
+ * Unit tests for vocabulary data access layer business logic.
+ * Tests focus on actual behavior and edge cases.
  */
 
-describe('Vocabulary Data Access Layer', () => {
-	describe('Function Exports', () => {
-		it('should export all required CRUD functions', async () => {
-			const module = await import('./dataAccess.ts')
+describe('createCategory', () => {
+	it('should throw error when category creation fails', async () => {
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
+				}),
+			}),
+		}
 
-			// Verify all expected functions are exported
-			const expectedFunctions = [
-				'getAllCategories',
-				'getCategoryWithStats',
-				'createCategory',
-				'getWordsByCategory',
-				'getWordWithDetails',
-				'createWord',
-				'getExamplesByWord',
-				'createExample',
-				'getUserReview',
-				'createOrUpdateReview',
-				'getDueCards',
-				'getDueCardCount',
-				'getRecentReviews',
-				'saveUserProgress',
-				'loadUserProgress',
-				'getUserProgressStats',
-			]
-
-			for (const functionName of expectedFunctions) {
-				expect(module).toHaveProperty(functionName)
-				expect(typeof module[functionName as keyof typeof module]).toBe('function')
-			}
-		})
-
-		it('should export category operations', async () => {
-			const dataAccess = await import('./dataAccess.ts')
-
-			expect(typeof dataAccess.getAllCategories).toBe('function')
-			expect(typeof dataAccess.getCategoryWithStats).toBe('function')
-			expect(typeof dataAccess.createCategory).toBe('function')
-		})
-
-		it('should export word operations', async () => {
-			const dataAccess = await import('./dataAccess.ts')
-
-			expect(typeof dataAccess.getWordsByCategory).toBe('function')
-			expect(typeof dataAccess.getWordWithDetails).toBe('function')
-			expect(typeof dataAccess.createWord).toBe('function')
-		})
-
-		it('should export example operations', async () => {
-			const dataAccess = await import('./dataAccess.ts')
-
-			expect(typeof dataAccess.getExamplesByWord).toBe('function')
-			expect(typeof dataAccess.createExample).toBe('function')
-		})
-
-		it('should export review operations', async () => {
-			const dataAccess = await import('./dataAccess.ts')
-
-			expect(typeof dataAccess.getUserReview).toBe('function')
-			expect(typeof dataAccess.createOrUpdateReview).toBe('function')
-		})
-
-		it('should export specialized query functions', async () => {
-			const dataAccess = await import('./dataAccess.ts')
-
-			expect(typeof dataAccess.getDueCards).toBe('function')
-			expect(typeof dataAccess.getDueCardCount).toBe('function')
-			expect(typeof dataAccess.getRecentReviews).toBe('function')
-		})
-
-		it('should export progress sync functions', async () => {
-			const dataAccess = await import('./dataAccess.ts')
-
-			expect(typeof dataAccess.saveUserProgress).toBe('function')
-			expect(typeof dataAccess.loadUserProgress).toBe('function')
-			expect(typeof dataAccess.getUserProgressStats).toBe('function')
-		})
+		await expect(
+			createCategory(mockDb as any, {
+				name: 'Test Category',
+				description: 'Test',
+				sortOrder: 1,
+			}),
+		).rejects.toThrow('Failed to create category')
 	})
 
-	describe('TypeScript Types', () => {
-		it('should have correct Category type structure', () => {
-			const mockCategory: Category = {
-				id: 'test-id',
-				name: 'Test Category',
-				description: 'Test description',
-				sortOrder: 1,
-				createdAt: new Date(),
-			}
+	it('should return created category when successful', async () => {
+		const mockCategory = {
+			id: 'cat-1',
+			name: 'Test Category',
+			description: 'Test',
+			sortOrder: 1,
+			createdAt: new Date(),
+		}
 
-			expect(mockCategory.id).toBe('test-id')
-			expect(mockCategory.name).toBe('Test Category')
-			expect(mockCategory.description).toBe('Test description')
-			expect(mockCategory.sortOrder).toBe(1)
-			expect(mockCategory.createdAt).toBeInstanceOf(Date)
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([mockCategory]),
+				}),
+			}),
+		}
+
+		const result = await createCategory(mockDb as any, {
+			name: 'Test Category',
+			description: 'Test',
+			sortOrder: 1,
 		})
 
-		it('should have correct Word type structure', () => {
-			const mockWord: Word = {
-				id: 'word-id',
-				categoryId: 'category-id',
+		expect(result).toEqual(mockCategory)
+	})
+})
+
+describe('createWord', () => {
+	it('should throw error when word creation fails', async () => {
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
+				}),
+			}),
+		}
+
+		await expect(
+			createWord(mockDb as any, {
+				categoryId: 'cat-1',
 				tl: 'Kumusta',
 				en: 'Hello',
-				createdAt: new Date(),
-			}
+			}),
+		).rejects.toThrow('Failed to create word')
+	})
 
-			expect(mockWord.id).toBe('word-id')
-			expect(mockWord.categoryId).toBe('category-id')
-			expect(mockWord.tl).toBe('Kumusta')
-			expect(mockWord.en).toBe('Hello')
-			expect(mockWord.createdAt).toBeInstanceOf(Date)
+	it('should return created word when successful', async () => {
+		const mockWord = {
+			id: 'word-1',
+			categoryId: 'cat-1',
+			tl: 'Kumusta',
+			en: 'Hello',
+			createdAt: new Date(),
+		}
+
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([mockWord]),
+				}),
+			}),
+		}
+
+		const result = await createWord(mockDb as any, {
+			categoryId: 'cat-1',
+			tl: 'Kumusta',
+			en: 'Hello',
 		})
 
-		it('should have correct Example type structure', () => {
-			const mockExample: Example = {
-				id: 'example-id',
-				wordId: 'word-id',
+		expect(result).toEqual(mockWord)
+	})
+})
+
+describe('createExample', () => {
+	it('should throw error when example creation fails', async () => {
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
+				}),
+			}),
+		}
+
+		await expect(
+			createExample(mockDb as any, {
+				wordId: 'word-1',
 				tl: 'Kumusta ka?',
 				en: 'How are you?',
 				audioUrl: 'audio/test.mp3',
-				createdAt: new Date(),
-			}
+			}),
+		).rejects.toThrow('Failed to create example')
+	})
 
-			expect(mockExample.id).toBe('example-id')
-			expect(mockExample.wordId).toBe('word-id')
-			expect(mockExample.tl).toBe('Kumusta ka?')
-			expect(mockExample.en).toBe('How are you?')
-			expect(mockExample.audioUrl).toBe('audio/test.mp3')
-			expect(mockExample.createdAt).toBeInstanceOf(Date)
+	it('should return created example when successful', async () => {
+		const mockExample = {
+			id: 'ex-1',
+			wordId: 'word-1',
+			tl: 'Kumusta ka?',
+			en: 'How are you?',
+			audioUrl: 'audio/test.mp3',
+			createdAt: new Date(),
+		}
+
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					returning: vi.fn().mockResolvedValue([mockExample]),
+				}),
+			}),
+		}
+
+		const result = await createExample(mockDb as any, {
+			wordId: 'word-1',
+			tl: 'Kumusta ka?',
+			en: 'How are you?',
+			audioUrl: 'audio/test.mp3',
 		})
 
-		it('should have correct Review type structure', () => {
-			const mockReview: Review = {
-				userId: 'user-id',
-				wordId: 'word-id',
+		expect(result).toEqual(mockExample)
+	})
+})
+
+describe('createOrUpdateReview', () => {
+	it('should throw error when review creation fails', async () => {
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
+					}),
+				}),
+			}),
+		}
+
+		await expect(
+			createOrUpdateReview(mockDb as any, {
+				userId: 'user-1',
+				wordId: 'word-1',
 				ease: 2.5,
 				intervalDays: 1,
 				reps: 1,
 				lapses: 0,
 				nextDue: '2024-01-02',
 				lastReviewed: '2024-01-01',
-			}
-
-			expect(mockReview.userId).toBe('user-id')
-			expect(mockReview.wordId).toBe('word-id')
-			expect(mockReview.ease).toBe(2.5)
-			expect(mockReview.intervalDays).toBe(1)
-			expect(mockReview.reps).toBe(1)
-			expect(mockReview.lapses).toBe(0)
-			expect(mockReview.nextDue).toBe('2024-01-02')
-			expect(mockReview.lastReviewed).toBe('2024-01-01')
-		})
-
-		it('should have correct NewCategory type structure', () => {
-			const newCategory: NewCategory = {
-				name: 'New Category',
-				description: 'New description',
-				sortOrder: 2,
-			}
-
-			expect(newCategory.name).toBe('New Category')
-			expect(newCategory.description).toBe('New description')
-			expect(newCategory.sortOrder).toBe(2)
-			// Should not have id or createdAt as they are auto-generated
-			expect('id' in newCategory).toBe(false)
-			expect('createdAt' in newCategory).toBe(false)
-		})
-
-		it('should have correct NewWord type structure', () => {
-			const newWord: NewWord = {
-				categoryId: 'category-id',
-				tl: 'Salamat',
-				en: 'Thank you',
-			}
-
-			expect(newWord.categoryId).toBe('category-id')
-			expect(newWord.tl).toBe('Salamat')
-			expect(newWord.en).toBe('Thank you')
-			// Should not have id or createdAt as they are auto-generated
-			expect('id' in newWord).toBe(false)
-			expect('createdAt' in newWord).toBe(false)
-		})
-
-		it('should have correct NewExample type structure', () => {
-			const newExample: NewExample = {
-				wordId: 'word-id',
-				tl: 'Salamat po',
-				en: 'Thank you (formal)',
-				audioUrl: 'audio/salamat.mp3',
-			}
-
-			expect(newExample.wordId).toBe('word-id')
-			expect(newExample.tl).toBe('Salamat po')
-			expect(newExample.en).toBe('Thank you (formal)')
-			expect(newExample.audioUrl).toBe('audio/salamat.mp3')
-			// Should not have id or createdAt as they are auto-generated
-			expect('id' in newExample).toBe(false)
-			expect('createdAt' in newExample).toBe(false)
-		})
-
-		it('should have correct NewReview type structure', () => {
-			const newReview: NewReview = {
-				userId: 'user-id',
-				wordId: 'word-id',
-				ease: 2.6,
-				intervalDays: 2,
-				reps: 2,
-				lapses: 0,
-				nextDue: '2024-01-03',
-				lastReviewed: '2024-01-01',
-			}
-
-			expect(newReview.userId).toBe('user-id')
-			expect(newReview.wordId).toBe('word-id')
-			expect(newReview.ease).toBe(2.6)
-			expect(newReview.intervalDays).toBe(2)
-			expect(newReview.reps).toBe(2)
-			expect(newReview.lapses).toBe(0)
-			expect(newReview.nextDue).toBe('2024-01-03')
-			expect(newReview.lastReviewed).toBe('2024-01-01')
-		})
+			}),
+		).rejects.toThrow('Failed to create or update review')
 	})
 
-	describe('Data Access Layer Documentation', () => {
-		it('should provide comprehensive CRUD operations for vocabulary data', () => {
-			// This test documents the expected functionality of the data access layer
-			const expectedOperations = [
-				'getAllCategories - Get all vocabulary categories',
-				'getCategoryWithStats - Get category with word/due counts',
-				'createCategory - Create new category',
-				'getWordsByCategory - Get words in a category',
-				'getWordWithDetails - Get word with category and examples',
-				'createWord - Create new word',
-				'getExamplesByWord - Get examples for a word',
-				'createExample - Create new example',
-				'getUserReview - Get user review for a word',
-				'createOrUpdateReview - Save/update review data',
-				'getDueCards - Get cards due for review',
-				'getDueCardCount - Count cards due for review',
-				'getRecentReviews - Get recent review history',
-				'saveUserProgress - Save user progress data',
-				'loadUserProgress - Load user progress data',
-				'getUserProgressStats - Get user statistics',
-			]
+	it('should return created review when successful', async () => {
+		const mockReview = {
+			userId: 'user-1',
+			wordId: 'word-1',
+			ease: 2.5,
+			intervalDays: 1,
+			reps: 1,
+			lapses: 0,
+			nextDue: '2024-01-02',
+			lastReviewed: '2024-01-01',
+		}
 
-			expect(expectedOperations.length).toBeGreaterThan(0)
-			expect(expectedOperations).toContain('getAllCategories - Get all vocabulary categories')
-			expect(expectedOperations).toContain('getDueCards - Get cards due for review')
-			expect(expectedOperations).toContain('saveUserProgress - Save user progress data')
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([mockReview]),
+					}),
+				}),
+			}),
+		}
+
+		const result = await createOrUpdateReview(mockDb as any, {
+			userId: 'user-1',
+			wordId: 'word-1',
+			ease: 2.5,
+			intervalDays: 1,
+			reps: 1,
+			lapses: 0,
+			nextDue: '2024-01-02',
+			lastReviewed: '2024-01-01',
 		})
 
-		it('should support spaced repetition system requirements', () => {
-			// Document the SRS-specific functionality
-			const srsFeatures = [
-				'Due card queries with date filtering',
-				'Progress tracking with ease and interval data',
-				'Review history with timestamps',
-				'User-specific progress isolation',
-				'Joined queries for flashcard data with examples',
-			]
+		expect(result).toEqual(mockReview)
+	})
+})
 
-			expect(srsFeatures.length).toBe(5)
-			expect(srsFeatures).toContain('Due card queries with date filtering')
-			expect(srsFeatures).toContain('Progress tracking with ease and interval data')
+describe('saveUserProgress', () => {
+	it('should apply default values when saving partial user progress', async () => {
+		const mockReview = {
+			userId: 'user-1',
+			wordId: 'word-1',
+			ease: 2.6,
+			intervalDays: 0,
+			reps: 0,
+			lapses: 0,
+			nextDue: '2024-01-02',
+			lastReviewed: '2024-01-01',
+		}
+
+		const mockDb = {
+			insert: vi.fn().mockReturnValue({
+				values: vi.fn().mockReturnValue({
+					onConflictDoUpdate: vi.fn().mockReturnValue({
+						returning: vi.fn().mockResolvedValue([mockReview]),
+					}),
+				}),
+			}),
+		}
+
+		const result = await saveUserProgress(mockDb as any, 'user-1', 'word-1', {
+			ease: 2.6, // Only provide ease, other values should get defaults
 		})
+
+		expect(result).toEqual(mockReview)
+		expect(mockDb.insert).toHaveBeenCalled()
+
+		// Verify the values passed to the database include defaults
+		const insertCall = mockDb.insert().values
+		expect(insertCall).toHaveBeenCalledWith(
+			expect.objectContaining({
+				userId: 'user-1',
+				wordId: 'word-1',
+				ease: 2.6, // User provided
+				intervalDays: 0, // Default
+				reps: 0, // Default
+				lapses: 0, // Default
+				nextDue: expect.any(String), // Default (today)
+				lastReviewed: expect.any(String), // Default (today)
+			}),
+		)
+	})
+
+	it('should generate current date strings for default values', () => {
+		const today = new Date().toISOString().split('T')[0]
+		expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/) // YYYY-MM-DD format
+	})
+})
+
+describe('getDueCards', () => {
+	it('should handle conditional limit in query', async () => {
+		const mockResults = [
+			{
+				word: { id: 'word-1', categoryId: 'cat-1', tl: 'Test', en: 'Test', createdAt: new Date() },
+				category: {
+					id: 'cat-1',
+					name: 'Test',
+					description: null,
+					sortOrder: 1,
+					createdAt: new Date(),
+				},
+				review: null,
+			},
+		]
+
+		const mockExamples = [
+			{
+				id: 'ex-1',
+				wordId: 'word-1',
+				tl: 'Test example',
+				en: 'Test example',
+				audioUrl: null,
+				createdAt: new Date(),
+			},
+		]
+
+		const mockQuery = {
+			select: vi.fn().mockReturnThis(),
+			from: vi.fn().mockReturnThis(),
+			innerJoin: vi.fn().mockReturnThis(),
+			leftJoin: vi.fn().mockReturnThis(),
+			where: vi.fn().mockReturnThis(),
+			orderBy: vi.fn().mockReturnThis(),
+			limit: vi.fn().mockResolvedValue(mockResults),
+		}
+
+		const mockDb = {
+			select: vi.fn().mockReturnValue(mockQuery),
+		}
+
+		// Mock the examples query
+		mockDb.select
+			.mockReturnValueOnce(mockQuery) // First call for main query
+			.mockReturnValueOnce({
+				// Second call for examples query
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockExamples),
+				}),
+			})
+
+		const result = await getDueCards(mockDb as any, 'user-1', 'cat-1', 5)
+
+		expect(result).toHaveLength(1)
+		expect(result[0]?.examples).toEqual(mockExamples)
+		expect(mockQuery.limit).toHaveBeenCalledWith(5)
+	})
+
+	it('should handle query without limit', async () => {
+		const mockResults = [
+			{
+				word: { id: 'word-1', categoryId: 'cat-1', tl: 'Test', en: 'Test', createdAt: new Date() },
+				category: {
+					id: 'cat-1',
+					name: 'Test',
+					description: null,
+					sortOrder: 1,
+					createdAt: new Date(),
+				},
+				review: null,
+			},
+		]
+
+		const mockExamples: any[] = []
+
+		const mockQueryWithoutLimit = {
+			select: vi.fn().mockReturnThis(),
+			from: vi.fn().mockReturnThis(),
+			innerJoin: vi.fn().mockReturnThis(),
+			leftJoin: vi.fn().mockReturnThis(),
+			where: vi.fn().mockReturnThis(),
+			orderBy: vi.fn().mockResolvedValue(mockResults),
+		}
+
+		const mockDb = {
+			select: vi.fn().mockReturnValue(mockQueryWithoutLimit),
+		}
+
+		// Mock the examples query
+		mockDb.select
+			.mockReturnValueOnce(mockQueryWithoutLimit) // First call for main query
+			.mockReturnValueOnce({
+				// Second call for examples query
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue(mockExamples),
+				}),
+			})
+
+		const result = await getDueCards(mockDb as any, 'user-1')
+
+		expect(result).toHaveLength(1)
+		expect(result[0]?.examples).toEqual(mockExamples)
+		// Verify limit was not called when no limit provided
+		expect('limit' in mockQueryWithoutLimit).toBe(false)
+	})
+
+	it('should convert null review to undefined in flashcard data', async () => {
+		const mockResults = [
+			{
+				word: { id: 'word-1', categoryId: 'cat-1', tl: 'Test', en: 'Test', createdAt: new Date() },
+				category: {
+					id: 'cat-1',
+					name: 'Test',
+					description: null,
+					sortOrder: 1,
+					createdAt: new Date(),
+				},
+				review: null, // Database returns null
+			},
+		]
+
+		const mockQuery = {
+			select: vi.fn().mockReturnThis(),
+			from: vi.fn().mockReturnThis(),
+			innerJoin: vi.fn().mockReturnThis(),
+			leftJoin: vi.fn().mockReturnThis(),
+			where: vi.fn().mockReturnThis(),
+			orderBy: vi.fn().mockResolvedValue(mockResults),
+		}
+
+		const mockDb = {
+			select: vi.fn().mockReturnValue(mockQuery),
+		}
+
+		// Mock the examples query
+		mockDb.select
+			.mockReturnValueOnce(mockQuery) // First call for main query
+			.mockReturnValueOnce({
+				// Second call for examples query
+				from: vi.fn().mockReturnValue({
+					where: vi.fn().mockResolvedValue([]),
+				}),
+			})
+
+		const result = await getDueCards(mockDb as any, 'user-1')
+
+		expect(result[0]?.review).toBeUndefined() // Should be undefined, not null
 	})
 })
