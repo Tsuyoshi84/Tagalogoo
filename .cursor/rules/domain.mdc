@@ -11,7 +11,6 @@ alwaysApply: false
 - Use clear and descriptive names.
 - Add JSDoc comments. Put `@example` tags only for functions and mapped files to illustrate usage.
 - If a function has a generic purpose and doesn't contain business logic, store it in `app/utils` or `shared/utils` instead.
-- Functions should be pure (no side effects) and deterministic.
 - Prefer composition over inheritance - break complex business logic into smaller, focused functions.
 - Use TypeScript types from `shared/types` or `app/types` for domain-specific data structures.
 - Provide unit tests with comprehensive coverage of business rules and edge cases.
