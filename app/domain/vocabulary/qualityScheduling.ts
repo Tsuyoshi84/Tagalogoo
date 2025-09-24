@@ -99,11 +99,11 @@ export function getQualityDescription(quality: QualityRating): string {
  * });
  * ```
  */
-export function getQualityOptions(): Array<{
+export function getQualityOptions(): readonly {
 	value: QualityRating
 	label: string
 	description: string
-}> {
+}[] {
 	return Object.values(QUALITY_RATINGS).map((quality) => ({
 		value: quality,
 		label: getQualityLabel(quality),

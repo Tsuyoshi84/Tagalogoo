@@ -110,7 +110,7 @@ export interface ReviewOutcome {
  * ```
  */
 export function calculateSessionStats(
-	outcomes: ReviewOutcome[],
+	outcomes: readonly ReviewOutcome[],
 	sessionStartTime: Date,
 	sessionEndTime: Date,
 ): SessionStats {
@@ -164,8 +164,8 @@ export function calculateSessionStats(
  * ```
  */
 export function calculateProgressStats(
-	allReviews: ReviewData[],
-	allOutcomes: ReviewOutcome[],
+	allReviews: readonly ReviewData[],
+	allOutcomes: readonly ReviewOutcome[],
 	totalStudyTime: number,
 ): ProgressStats {
 	const totalCards = allReviews.length
@@ -214,7 +214,7 @@ export function calculateProgressStats(
  * console.log(longestStreak); // 2 (longest consecutive streak)
  * ```
  */
-export function calculateStreaks(outcomes: ReviewOutcome[]): {
+export function calculateStreaks(outcomes: readonly ReviewOutcome[]): {
 	currentStreak: number
 	longestStreak: number
 } {
@@ -272,7 +272,7 @@ export function calculateStreaks(outcomes: ReviewOutcome[]): {
  * console.log(stats.studyTime); // 5 (seconds)
  * ```
  */
-export function calculateDailyStats(outcomes: ReviewOutcome[], date: Date): DailyStats {
+export function calculateDailyStats(outcomes: readonly ReviewOutcome[], date: Date): DailyStats {
 	const dayStart = new Date(date)
 	dayStart.setHours(0, 0, 0, 0)
 
@@ -352,7 +352,7 @@ export function isReviewCorrect(quality: number): boolean {
  * console.log(velocity); // 0.07 (2 cards learned in 30 days)
  * ```
  */
-export function calculateLearningVelocity(reviews: ReviewData[], daysPeriod = 30): number {
+export function calculateLearningVelocity(reviews: readonly ReviewData[], daysPeriod = 30): number {
 	const now = new Date()
 	const periodStart = new Date(now.getTime() - daysPeriod * 24 * 60 * 60 * 1000)
 
@@ -385,7 +385,10 @@ export function calculateLearningVelocity(reviews: ReviewData[], daysPeriod = 30
  * console.log(dueCards.length); // 2 (first two cards)
  * ```
  */
-export function getDueCards(reviews: ReviewData[], currentDate: Date = new Date()): ReviewData[] {
+export function getDueCards(
+	reviews: readonly ReviewData[],
+	currentDate: Date = new Date(),
+): ReviewData[] {
 	return reviews.filter((review) => review.nextDue <= currentDate)
 }
 
@@ -410,7 +413,7 @@ export function getDueCards(reviews: ReviewData[], currentDate: Date = new Date(
  * console.log(difficultCards.length); // 2 (first two cards)
  * ```
  */
-export function getDifficultCards(reviews: ReviewData[]): ReviewData[] {
+export function getDifficultCards(reviews: readonly ReviewData[]): readonly ReviewData[] {
 	return reviews.filter(
 		(review) => review.lapses > 2 || review.ease < 2.0 || (review.reps > 5 && review.ease < 2.2),
 	)
