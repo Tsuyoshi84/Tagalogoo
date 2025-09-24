@@ -1,5 +1,5 @@
 ---
-fileMatchPattern: app/**/*.vue
+fileMatchPattern: "app/**/*.vue"
 inclusion: fileMatch
 ---
 # Vue Component Rules

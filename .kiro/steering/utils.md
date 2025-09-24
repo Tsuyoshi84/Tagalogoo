@@ -1,5 +1,5 @@
 ---
-fileMatchPattern: {app/utils,shared/utils}/**/*.ts
+fileMatchPattern: "{app/utils,shared/utils}/**/*.ts"
 inclusion: fileMatch
 ---
 # Utility Function Rules

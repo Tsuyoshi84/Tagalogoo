@@ -1,5 +1,5 @@
 ---
-fileMatchPattern: app/domain/**/*.ts
+fileMatchPattern: "app/domain/**/*.ts"
 inclusion: fileMatch
 ---
 # Rules for domain logic

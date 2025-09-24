@@ -1,5 +1,5 @@
 ---
-fileMatchPattern: **/*.{ts,vue}
+fileMatchPattern: "**/*.{ts,vue}"
 inclusion: fileMatch
 ---
 # Rules for TypeScript
