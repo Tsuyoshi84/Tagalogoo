@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Set up database schema and migrations
+- [x] 1. Set up database schema and migrations
   - Create Supabase migration for vocabulary tables (categories, words, examples, reviews)
   - Add database indexes for optimal query performance
   - Configure Row Level Security policies for data access control
