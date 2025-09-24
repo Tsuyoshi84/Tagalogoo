@@ -38,6 +38,9 @@
 				"noMisusedPromises": "on",
 				"noNonNullAssertedOptionalChain": "on"
 			},
+			"performance": {
+				"noBarrelFile": "on"
+			},
 			"style": {
 				"noUselessElse": "off",
 				"noUnusedTemplateLiteral": "on",
@@ -91,7 +94,17 @@
 			}
 		},
 		{
-			"includes": ["**/*.spec.ts", "**/*.bench.ts"],
+			"includes": ["app/domain/database/**/*.ts"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noBarrelFile": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.spec.ts", "**/*.test.ts", "**/*.bench.ts"],
 			"linter": {
 				"rules": {
 					"style": {
