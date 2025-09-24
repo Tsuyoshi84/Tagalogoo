@@ -21,22 +21,22 @@
   - Write unit tests for data access functions
   - _Requirements: 1.1, 3.1, 3.2, 6.1, 6.2_
 
-- [ ] 4. Implement core vocabulary composables
-- [ ] 4.1 Create useVocabularyStudy composable
+- [x] 4. Implement core vocabulary composables
+- [x] 4.1 Create useVocabularyStudy composable
   - Build study session state management (current card, progress, statistics)
   - Implement session start/end logic with proper data persistence
   - Add review submission handling with SRS calculations
   - Write unit tests for study session logic
   - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.6, 2.1_
 
-- [ ] 4.2 Create useSpacedRepetition composable
+- [x] 4.2 Create useSpacedRepetition composable
   - Implement card scheduling and due date calculations
   - Build progress tracking and statistics computation
   - Add functions for initializing new cards and updating existing reviews
   - Write unit tests for spaced repetition logic
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 4.3 Create useAudioPlayback composable (optional audio support)
+- [x] 4.3 Create useAudioPlayback composable (optional audio support)
   - Implement audio loading and playback controls
   - Add error handling for missing or failed audio files
   - Build visual feedback for audio playback state

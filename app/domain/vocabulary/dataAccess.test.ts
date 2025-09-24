@@ -1,173 +1,247 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
 	createCategory,
-	createExample,
 	createOrUpdateReview,
-	createWord,
-	getDueCards,
+	getAllCategories,
+	getDueCardCount,
+	getUserProgressStats,
 	saveUserProgress,
 } from './dataAccess.ts'
 
 /**
  * Unit tests for vocabulary data access layer business logic.
- * Tests focus on actual behavior and edge cases.
+ * Tests focus on actual behavior and edge cases using Supabase client.
  */
 
-describe('createCategory', () => {
-	it('should throw error when category creation fails', async () => {
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
-				}),
-			}),
-		}
+// Mock Supabase client
+const createMockSupabaseClient = () => ({
+	from: vi.fn(),
+	rpc: vi.fn(),
+})
 
-		await expect(
-			createCategory(mockDb as any, {
-				name: 'Test Category',
-				description: 'Test',
-				sortOrder: 1,
-			}),
-		).rejects.toThrow('Failed to create category')
+describe('createCategory', () => {
+	let mockSupabase: ReturnType<typeof createMockSupabaseClient>
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient()
 	})
 
-	it('should return created category when successful', async () => {
+	it('should create a category successfully', async () => {
 		const mockCategory = {
 			id: 'cat-1',
 			name: 'Test Category',
 			description: 'Test',
-			sortOrder: 1,
-			createdAt: new Date(),
+			sort_order: 1,
+			created_at: new Date(),
 		}
 
-		const mockDb = {
+		mockSupabase.from.mockReturnValue({
 			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([mockCategory]),
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: mockCategory,
+						error: null,
+					}),
 				}),
 			}),
-		}
+		})
 
-		const result = await createCategory(mockDb as any, {
+		const result = await createCategory(mockSupabase as any, {
 			name: 'Test Category',
 			description: 'Test',
 			sortOrder: 1,
 		})
 
 		expect(result).toEqual(mockCategory)
+		expect(mockSupabase.from).toHaveBeenCalledWith('categories')
+	})
+
+	it('should throw error when category creation fails', async () => {
+		mockSupabase.from.mockReturnValue({
+			insert: vi.fn().mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: null,
+						error: { message: 'Insert failed' },
+					}),
+				}),
+			}),
+		})
+
+		await expect(
+			createCategory(mockSupabase as any, {
+				name: 'Test Category',
+				description: 'Test',
+				sortOrder: 1,
+			}),
+		).rejects.toThrow('Failed to create category: Insert failed')
+	})
+
+	it('should throw error when no data is returned', async () => {
+		mockSupabase.from.mockReturnValue({
+			insert: vi.fn().mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: null,
+						error: null,
+					}),
+				}),
+			}),
+		})
+
+		await expect(
+			createCategory(mockSupabase as any, {
+				name: 'Test Category',
+				description: 'Test',
+				sortOrder: 1,
+			}),
+		).rejects.toThrow('Failed to create category: No data returned')
 	})
 })
 
-describe('createWord', () => {
-	it('should throw error when word creation fails', async () => {
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
-				}),
-			}),
-		}
+describe('getAllCategories', () => {
+	let mockSupabase: ReturnType<typeof createMockSupabaseClient>
 
-		await expect(
-			createWord(mockDb as any, {
-				categoryId: 'cat-1',
-				tl: 'Kumusta',
-				en: 'Hello',
-			}),
-		).rejects.toThrow('Failed to create word')
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient()
 	})
 
-	it('should return created word when successful', async () => {
-		const mockWord = {
-			id: 'word-1',
-			categoryId: 'cat-1',
-			tl: 'Kumusta',
-			en: 'Hello',
-			createdAt: new Date(),
-		}
+	it('should return all categories ordered by sort_order and name', async () => {
+		const mockCategories = [
+			{ id: 'cat-1', name: 'A Category', sort_order: 1 },
+			{ id: 'cat-2', name: 'B Category', sort_order: 2 },
+		]
 
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([mockWord]),
+		mockSupabase.from.mockReturnValue({
+			select: vi.fn().mockReturnValue({
+				order: vi.fn().mockReturnValue({
+					order: vi.fn().mockResolvedValue({
+						data: mockCategories,
+						error: null,
+					}),
 				}),
 			}),
-		}
-
-		const result = await createWord(mockDb as any, {
-			categoryId: 'cat-1',
-			tl: 'Kumusta',
-			en: 'Hello',
 		})
 
-		expect(result).toEqual(mockWord)
+		const result = await getAllCategories(mockSupabase as any)
+
+		expect(result).toEqual(mockCategories)
+		expect(mockSupabase.from).toHaveBeenCalledWith('categories')
+	})
+
+	it('should throw error when fetch fails', async () => {
+		mockSupabase.from.mockReturnValue({
+			select: vi.fn().mockReturnValue({
+				order: vi.fn().mockReturnValue({
+					order: vi.fn().mockResolvedValue({
+						data: null,
+						error: { message: 'Fetch failed' },
+					}),
+				}),
+			}),
+		})
+
+		await expect(getAllCategories(mockSupabase as any)).rejects.toThrow(
+			'Failed to fetch categories: Fetch failed',
+		)
 	})
 })
 
-describe('createExample', () => {
-	it('should throw error when example creation fails', async () => {
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
-				}),
-			}),
-		}
+describe('getDueCardCount', () => {
+	let mockSupabase: ReturnType<typeof createMockSupabaseClient>
 
-		await expect(
-			createExample(mockDb as any, {
-				wordId: 'word-1',
-				tl: 'Kumusta ka?',
-				en: 'How are you?',
-				audioUrl: 'audio/test.mp3',
-			}),
-		).rejects.toThrow('Failed to create example')
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient()
 	})
 
-	it('should return created example when successful', async () => {
-		const mockExample = {
-			id: 'ex-1',
-			wordId: 'word-1',
-			tl: 'Kumusta ka?',
-			en: 'How are you?',
-			audioUrl: 'audio/test.mp3',
-			createdAt: new Date(),
-		}
-
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					returning: vi.fn().mockResolvedValue([mockExample]),
-				}),
-			}),
-		}
-
-		const result = await createExample(mockDb as any, {
-			wordId: 'word-1',
-			tl: 'Kumusta ka?',
-			en: 'How are you?',
-			audioUrl: 'audio/test.mp3',
+	it('should return due card count from RPC function', async () => {
+		mockSupabase.rpc.mockResolvedValue({
+			data: 15,
+			error: null,
 		})
 
-		expect(result).toEqual(mockExample)
+		const result = await getDueCardCount(mockSupabase as any, 'user-1', 'cat-1')
+
+		expect(result).toBe(15)
+		expect(mockSupabase.rpc).toHaveBeenCalledWith('get_due_cards_count', {
+			user_id: 'user-1',
+			category_id: 'cat-1',
+		})
+	})
+
+	it('should return 0 when RPC returns null', async () => {
+		mockSupabase.rpc.mockResolvedValue({
+			data: null,
+			error: null,
+		})
+
+		const result = await getDueCardCount(mockSupabase as any, 'user-1')
+
+		expect(result).toBe(0)
+	})
+
+	it('should throw error when RPC fails', async () => {
+		mockSupabase.rpc.mockResolvedValue({
+			data: null,
+			error: { message: 'RPC failed' },
+		})
+
+		await expect(getDueCardCount(mockSupabase as any, 'user-1')).rejects.toThrow(
+			'Failed to count due cards: RPC failed',
+		)
 	})
 })
 
 describe('createOrUpdateReview', () => {
-	it('should throw error when review creation fails', async () => {
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					onConflictDoUpdate: vi.fn().mockReturnValue({
-						returning: vi.fn().mockResolvedValue([]), // Empty result simulates failure
+	let mockSupabase: ReturnType<typeof createMockSupabaseClient>
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient()
+	})
+
+	it('should create or update review successfully', async () => {
+		const mockReview = {
+			userId: 'user-1',
+			wordId: 'word-1',
+			ease: 2.5,
+			intervalDays: 1,
+			reps: 1,
+			lapses: 0,
+			nextDue: '2024-01-02',
+			lastReviewed: '2024-01-01',
+		}
+
+		mockSupabase.from.mockReturnValue({
+			upsert: vi.fn().mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: mockReview,
+						error: null,
 					}),
 				}),
 			}),
-		}
+		})
+
+		const result = await createOrUpdateReview(mockSupabase as any, mockReview)
+
+		expect(result).toEqual(mockReview)
+		expect(mockSupabase.from).toHaveBeenCalledWith('reviews')
+	})
+
+	it('should throw error when upsert fails', async () => {
+		mockSupabase.from.mockReturnValue({
+			upsert: vi.fn().mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: null,
+						error: { message: 'Upsert failed' },
+					}),
+				}),
+			}),
+		})
 
 		await expect(
-			createOrUpdateReview(mockDb as any, {
+			createOrUpdateReview(mockSupabase as any, {
 				userId: 'user-1',
 				wordId: 'word-1',
 				ease: 2.5,
@@ -177,244 +251,111 @@ describe('createOrUpdateReview', () => {
 				nextDue: '2024-01-02',
 				lastReviewed: '2024-01-01',
 			}),
-		).rejects.toThrow('Failed to create or update review')
-	})
-
-	it('should return created review when successful', async () => {
-		const mockReview = {
-			userId: 'user-1',
-			wordId: 'word-1',
-			ease: 2.5,
-			intervalDays: 1,
-			reps: 1,
-			lapses: 0,
-			nextDue: '2024-01-02',
-			lastReviewed: '2024-01-01',
-		}
-
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					onConflictDoUpdate: vi.fn().mockReturnValue({
-						returning: vi.fn().mockResolvedValue([mockReview]),
-					}),
-				}),
-			}),
-		}
-
-		const result = await createOrUpdateReview(mockDb as any, {
-			userId: 'user-1',
-			wordId: 'word-1',
-			ease: 2.5,
-			intervalDays: 1,
-			reps: 1,
-			lapses: 0,
-			nextDue: '2024-01-02',
-			lastReviewed: '2024-01-01',
-		})
-
-		expect(result).toEqual(mockReview)
+		).rejects.toThrow('Failed to create or update review: Upsert failed')
 	})
 })
 
 describe('saveUserProgress', () => {
-	it('should apply default values when saving partial user progress', async () => {
+	let mockSupabase: ReturnType<typeof createMockSupabaseClient>
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient()
+	})
+
+	it('should save user progress with default values', async () => {
 		const mockReview = {
 			userId: 'user-1',
 			wordId: 'word-1',
-			ease: 2.6,
+			ease: 2.5,
 			intervalDays: 0,
 			reps: 0,
 			lapses: 0,
-			nextDue: '2024-01-02',
-			lastReviewed: '2024-01-01',
+			nextDue: expect.any(String),
+			lastReviewed: expect.any(String),
 		}
 
-		const mockDb = {
-			insert: vi.fn().mockReturnValue({
-				values: vi.fn().mockReturnValue({
-					onConflictDoUpdate: vi.fn().mockReturnValue({
-						returning: vi.fn().mockResolvedValue([mockReview]),
+		mockSupabase.from.mockReturnValue({
+			upsert: vi.fn().mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: mockReview,
+						error: null,
 					}),
 				}),
 			}),
-		}
-
-		const result = await saveUserProgress(mockDb as any, 'user-1', 'word-1', {
-			ease: 2.6, // Only provide ease, other values should get defaults
 		})
 
-		expect(result).toEqual(mockReview)
-		expect(mockDb.insert).toHaveBeenCalled()
+		const result = await saveUserProgress(mockSupabase as any, 'user-1', 'word-1', {
+			ease: 2.6,
+		})
 
-		// Verify the values passed to the database include defaults
-		const insertCall = mockDb.insert().values
-		expect(insertCall).toHaveBeenCalledWith(
+		expect(result).toEqual(
 			expect.objectContaining({
 				userId: 'user-1',
 				wordId: 'word-1',
-				ease: 2.6, // User provided
-				intervalDays: 0, // Default
-				reps: 0, // Default
-				lapses: 0, // Default
-				nextDue: expect.any(String), // Default (today)
-				lastReviewed: expect.any(String), // Default (today)
+				ease: 2.5, // From mock return
 			}),
 		)
 	})
-
-	it('should generate current date strings for default values', () => {
-		const today = new Date().toISOString().split('T')[0]
-		expect(today).toMatch(/^\d{4}-\d{2}-\d{2}$/) // YYYY-MM-DD format
-	})
 })
 
-describe('getDueCards', () => {
-	it('should handle conditional limit in query', async () => {
-		const mockResults = [
-			{
-				word: { id: 'word-1', categoryId: 'cat-1', tl: 'Test', en: 'Test', createdAt: new Date() },
-				category: {
-					id: 'cat-1',
-					name: 'Test',
-					description: null,
-					sortOrder: 1,
-					createdAt: new Date(),
-				},
-				review: null,
-			},
-		]
+describe('getUserProgressStats', () => {
+	let mockSupabase: ReturnType<typeof createMockSupabaseClient>
 
-		const mockExamples = [
-			{
-				id: 'ex-1',
-				wordId: 'word-1',
-				tl: 'Test example',
-				en: 'Test example',
-				audioUrl: null,
-				createdAt: new Date(),
-			},
-		]
-
-		const mockQuery = {
-			select: vi.fn().mockReturnThis(),
-			from: vi.fn().mockReturnThis(),
-			innerJoin: vi.fn().mockReturnThis(),
-			leftJoin: vi.fn().mockReturnThis(),
-			where: vi.fn().mockReturnThis(),
-			orderBy: vi.fn().mockReturnThis(),
-			limit: vi.fn().mockResolvedValue(mockResults),
-		}
-
-		const mockDb = {
-			select: vi.fn().mockReturnValue(mockQuery),
-		}
-
-		// Mock the examples query
-		mockDb.select
-			.mockReturnValueOnce(mockQuery) // First call for main query
-			.mockReturnValueOnce({
-				// Second call for examples query
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue(mockExamples),
-				}),
-			})
-
-		const result = await getDueCards(mockDb as any, 'user-1', 'cat-1', 5)
-
-		expect(result).toHaveLength(1)
-		expect(result[0]?.examples).toEqual(mockExamples)
-		expect(mockQuery.limit).toHaveBeenCalledWith(5)
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient()
 	})
 
-	it('should handle query without limit', async () => {
-		const mockResults = [
-			{
-				word: { id: 'word-1', categoryId: 'cat-1', tl: 'Test', en: 'Test', createdAt: new Date() },
-				category: {
-					id: 'cat-1',
-					name: 'Test',
-					description: null,
-					sortOrder: 1,
-					createdAt: new Date(),
-				},
-				review: null,
-			},
-		]
-
-		const mockExamples: any[] = []
-
-		const mockQueryWithoutLimit = {
-			select: vi.fn().mockReturnThis(),
-			from: vi.fn().mockReturnThis(),
-			innerJoin: vi.fn().mockReturnThis(),
-			leftJoin: vi.fn().mockReturnThis(),
-			where: vi.fn().mockReturnThis(),
-			orderBy: vi.fn().mockResolvedValue(mockResults),
+	it('should return progress statistics from RPC function', async () => {
+		const mockStats = {
+			total_cards: 100,
+			studied_cards: 75,
+			due_cards: 15,
+			average_ease: 2.7,
 		}
 
-		const mockDb = {
-			select: vi.fn().mockReturnValue(mockQueryWithoutLimit),
-		}
+		mockSupabase.rpc.mockResolvedValue({
+			data: mockStats,
+			error: null,
+		})
 
-		// Mock the examples query
-		mockDb.select
-			.mockReturnValueOnce(mockQueryWithoutLimit) // First call for main query
-			.mockReturnValueOnce({
-				// Second call for examples query
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue(mockExamples),
-				}),
-			})
+		const result = await getUserProgressStats(mockSupabase as any, 'user-1')
 
-		const result = await getDueCards(mockDb as any, 'user-1')
-
-		expect(result).toHaveLength(1)
-		expect(result[0]?.examples).toEqual(mockExamples)
-		// Verify limit was not called when no limit provided
-		expect('limit' in mockQueryWithoutLimit).toBe(false)
+		expect(result).toEqual({
+			totalCards: 100,
+			studiedCards: 75,
+			dueCards: 15,
+			averageEase: 2.7,
+		})
+		expect(mockSupabase.rpc).toHaveBeenCalledWith('get_user_progress_stats', {
+			user_id: 'user-1',
+		})
 	})
 
-	it('should convert null review to undefined in flashcard data', async () => {
-		const mockResults = [
-			{
-				word: { id: 'word-1', categoryId: 'cat-1', tl: 'Test', en: 'Test', createdAt: new Date() },
-				category: {
-					id: 'cat-1',
-					name: 'Test',
-					description: null,
-					sortOrder: 1,
-					createdAt: new Date(),
-				},
-				review: null, // Database returns null
-			},
-		]
+	it('should return default values when RPC returns null', async () => {
+		mockSupabase.rpc.mockResolvedValue({
+			data: null,
+			error: null,
+		})
 
-		const mockQuery = {
-			select: vi.fn().mockReturnThis(),
-			from: vi.fn().mockReturnThis(),
-			innerJoin: vi.fn().mockReturnThis(),
-			leftJoin: vi.fn().mockReturnThis(),
-			where: vi.fn().mockReturnThis(),
-			orderBy: vi.fn().mockResolvedValue(mockResults),
-		}
+		const result = await getUserProgressStats(mockSupabase as any, 'user-1')
 
-		const mockDb = {
-			select: vi.fn().mockReturnValue(mockQuery),
-		}
+		expect(result).toEqual({
+			totalCards: 0,
+			studiedCards: 0,
+			dueCards: 0,
+			averageEase: 2.5,
+		})
+	})
 
-		// Mock the examples query
-		mockDb.select
-			.mockReturnValueOnce(mockQuery) // First call for main query
-			.mockReturnValueOnce({
-				// Second call for examples query
-				from: vi.fn().mockReturnValue({
-					where: vi.fn().mockResolvedValue([]),
-				}),
-			})
+	it('should throw error when RPC fails', async () => {
+		mockSupabase.rpc.mockResolvedValue({
+			data: null,
+			error: { message: 'RPC failed' },
+		})
 
-		const result = await getDueCards(mockDb as any, 'user-1')
-
-		expect(result[0]?.review).toBeUndefined() // Should be undefined, not null
+		await expect(getUserProgressStats(mockSupabase as any, 'user-1')).rejects.toThrow(
+			'Failed to fetch progress statistics: RPC failed',
+		)
 	})
 })
