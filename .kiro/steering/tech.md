@@ -121,13 +121,26 @@ pnpm install     # Install dependencies
 - **Version Control**: Commit all migration files under version control
 - **Single Source of Truth**: Drizzle schema remains the source
 
+### Generate Types
+
+- Run `pnpx supabase gen types typescript --project-id {SUPABASE_PROJECT_ID} > types/database.types.ts` to generate types
+  - Find {SUPABASE_PROJECT_ID} from `.env` file
+
 ### Data Access Patterns
 
 #### Browser/Client-Side
 
 - **Always use Supabase JS client** - never Drizzle, never direct database connections
 - All queries automatically subject to Row Level Security (RLS)
-- Type-safe queries via TypeScript types generated from Drizzle schema
+- Type-safe queries via TypeScript types generated from Drizzle schema. For example:
+
+```ts
+import type { Database } from '~~/types/database.types'
+
+export useSomething() {
+ const supabase = useSupabaseClient<Database>()
+}
+```
 
 #### Nuxt Server Routes / API Handlers
 

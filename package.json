@@ -45,6 +45,7 @@
     "@vueuse/nuxt": "^13.9.0",
     "drizzle-kit": "^0.31.4",
     "lefthook": "^1.13.1",
+    "supabase": "^2.45.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
     "vue-tsc": "^3.0.7"
