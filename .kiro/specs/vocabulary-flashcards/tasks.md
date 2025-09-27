@@ -13,7 +13,7 @@
   - Write unit tests for SRS algorithm correctness
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 3. Build vocabulary data access layer
+- [x] 3. Build vocabulary data access layer
   - Create TypeScript interfaces matching database schema (categories, words, examples, reviews)
   - Implement Supabase client functions for CRUD operations on vocabulary data
   - Write functions to fetch due cards with joined examples data
