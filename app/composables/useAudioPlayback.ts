@@ -1,4 +1,5 @@
-import { onUnmounted, readonly, ref } from 'vue'
+import { tryOnUnmounted } from '@vueuse/core'
+import { readonly, ref } from 'vue'
 
 /**
  * Audio playback state interface
@@ -321,7 +322,7 @@ export function useAudioPlayback(events: AudioEvents = {}) {
 	/**
 	 * Cleanup on unmount
 	 */
-	onUnmounted(() => {
+	tryOnUnmounted(() => {
 		cleanupAudio()
 	})
 
