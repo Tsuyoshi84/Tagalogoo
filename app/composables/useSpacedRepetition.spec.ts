@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { ReviewResult } from '../domain/vocabulary/spacedRepetition'
 import type { FlashcardData, Review } from '../types/vocabulary'
 import { useSpacedRepetition } from './useSpacedRepetition'
+import { useVocabularyData } from './useVocabularyData'
 
 // Mock the dependencies
 vi.mock('./useVocabularyData', () => ({
@@ -13,9 +14,15 @@ vi.mock('./useVocabularyData', () => ({
 	})),
 }))
 
-vi.mock('#app/composables/useSupabaseUser', () => ({
-	useSupabaseUser: vi.fn(() => ref({ id: 'test-user-id' })),
+const { mockUseSupabaseUser } = vi.hoisted(() => ({
+	mockUseSupabaseUser: vi.fn(),
 }))
+
+vi.mock('#imports', () => ({
+	useSupabaseUser: mockUseSupabaseUser,
+}))
+
+const mockedUseVocabularyData = vi.mocked(useVocabularyData)
 
 // Mock data
 const mockCategory = {
@@ -86,10 +93,17 @@ describe('useSpacedRepetition', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks()
+		mockUseSupabaseUser.mockReset()
+		mockUseSupabaseUser.mockImplementation(() => ref({ id: 'test-user-id' }))
+		mockedUseVocabularyData.mockReset()
 
-		// Get the mocked functions
-		const { useVocabularyData } = require('./useVocabularyData')
-		mockVocabularyData = useVocabularyData() as any
+		mockVocabularyData = {
+			getUserReview: vi.fn(),
+			createReview: vi.fn(),
+			updateReview: vi.fn(),
+		}
+
+		mockedUseVocabularyData.mockImplementation(() => mockVocabularyData as any)
 	})
 
 	describe('calculateCardSchedule', () => {
@@ -304,8 +318,8 @@ describe('useSpacedRepetition', () => {
 				{ cardId: '5', quality: 4, responseTime: 1000, timestamp: new Date() },
 			]
 
-			expect(calculateCurrentStreak(results)).toBe(2) // Last 2 are correct
-			expect(calculateLongestStreak(results)).toBe(2) // Longest streak is 2
+			expect(calculateCurrentStreak(results)).toBe(3) // Last 3 are correct
+			expect(calculateLongestStreak(results)).toBe(3) // Longest streak is 3
 		})
 	})
 

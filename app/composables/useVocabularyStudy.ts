@@ -1,6 +1,8 @@
 import { readonly, ref } from 'vue'
+import { useSupabaseUser } from '#imports'
 import { calculateNextReview, initializeNewCard } from '../domain/vocabulary/spacedRepetition'
 import type { FlashcardData, StudySessionStats } from '../types/vocabulary'
+import { useVocabularyData } from './useVocabularyData'
 
 /**
  * Study session state interface

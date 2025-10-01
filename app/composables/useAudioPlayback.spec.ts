@@ -1,6 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAudioPlayback } from './useAudioPlayback'
 
+class MockMediaError extends Error {
+	static readonly MEDIA_ERR_ABORTED = 1
+	static readonly MEDIA_ERR_NETWORK = 2
+	static readonly MEDIA_ERR_DECODE = 3
+	static readonly MEDIA_ERR_SRC_NOT_SUPPORTED = 4
+
+	readonly MEDIA_ERR_ABORTED = MockMediaError.MEDIA_ERR_ABORTED
+	readonly MEDIA_ERR_NETWORK = MockMediaError.MEDIA_ERR_NETWORK
+	readonly MEDIA_ERR_DECODE = MockMediaError.MEDIA_ERR_DECODE
+	readonly MEDIA_ERR_SRC_NOT_SUPPORTED = MockMediaError.MEDIA_ERR_SRC_NOT_SUPPORTED
+	readonly code: number
+
+	constructor(code: number) {
+		super('MockMediaError')
+		this.code = code
+	}
+}
+
+globalThis.MediaError = MockMediaError as unknown as typeof MediaError
+
 // Mock HTMLAudioElement
 class MockAudioElement {
 	src = ''
@@ -76,7 +96,7 @@ class MockAudioElement {
 	}
 
 	simulateError(code: number = MediaError.MEDIA_ERR_NETWORK) {
-		this.error = { code } as MediaError
+		this.error = new MockMediaError(code) as MediaError
 		this.dispatchEvent(new Event('error'))
 	}
 }
@@ -370,9 +390,12 @@ describe('useAudioPlayback', () => {
 		it('should validate audio URLs', async () => {
 			const { validateAudioUrl } = useAudioPlayback()
 
-			// Mock successful validation
-			const result = await validateAudioUrl('valid-audio.mp3')
-			expect(typeof result).toBe('boolean')
+			const validationPromise = validateAudioUrl('valid-audio.mp3')
+			const audioElement = (global.Audio as any).mock.results.at(-1)?.value as MockAudioElement
+			audioElement.simulateCanPlayThrough()
+
+			const result = await validationPromise
+			expect(result).toBe(true)
 		})
 
 		it('should preload audio', () => {

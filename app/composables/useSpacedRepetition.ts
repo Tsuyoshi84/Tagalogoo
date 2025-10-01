@@ -1,4 +1,5 @@
 import { readonly, ref } from 'vue'
+import { useSupabaseUser } from '#imports'
 import {
 	calculateDifficulty,
 	calculateNextReview,
@@ -8,6 +9,7 @@ import {
 	type ReviewResult,
 } from '../domain/vocabulary/spacedRepetition'
 import type { FlashcardData, ProgressStats, Review } from '../types/vocabulary'
+import { useVocabularyData } from './useVocabularyData'
 
 /**
  * Card scheduling interface

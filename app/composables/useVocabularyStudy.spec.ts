@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest'
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import type { FlashcardData } from '../types/vocabulary'
+import { useVocabularyData } from './useVocabularyData'
+import type { StudySession } from './useVocabularyStudy.ts'
 import { useVocabularyStudy } from './useVocabularyStudy.ts'
 
 // Mock the dependencies
@@ -13,9 +15,15 @@ vi.mock('./useVocabularyData', () => ({
 	})),
 }))
 
-vi.mock('#app/composables/useSupabaseUser', () => ({
-	useSupabaseUser: vi.fn(() => ref({ id: 'test-user-id' })),
+const { mockUseSupabaseUser } = vi.hoisted(() => ({
+	mockUseSupabaseUser: vi.fn(),
 }))
+
+vi.mock('#imports', () => ({
+	useSupabaseUser: mockUseSupabaseUser,
+}))
+
+const mockedUseVocabularyData = vi.mocked(useVocabularyData)
 
 // Mock data
 const mockCategory = {
@@ -86,10 +94,18 @@ describe('useVocabularyStudy', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks()
+		mockUseSupabaseUser.mockReset()
+		mockUseSupabaseUser.mockImplementation(() => ref({ id: 'test-user-id' }))
+		mockedUseVocabularyData.mockReset()
 
-		// Get the mocked functions
-		const { useVocabularyData } = require('./useVocabularyData')
-		mockVocabularyData = useVocabularyData() as any
+		mockVocabularyData = {
+			getDueCards: vi.fn(),
+			getNewCards: vi.fn(),
+			createReview: vi.fn(),
+			updateReview: vi.fn(),
+		}
+
+		mockedUseVocabularyData.mockImplementation(() => mockVocabularyData as any)
 	})
 
 	describe('startSession', () => {
@@ -173,8 +189,11 @@ describe('useVocabularyStudy', () => {
 			await startSession('cat-1')
 
 			// Manually set index beyond cards length
-			if (currentSession.value) {
-				;(currentSession.value as any).currentIndex = 1
+			const writableSession = currentSession.value
+				? (toRaw(currentSession.value) as unknown as StudySession)
+				: null
+			if (writableSession) {
+				writableSession.currentIndex = 1
 			}
 
 			expect(getCurrentCard()).toBeNull()
@@ -310,8 +329,11 @@ describe('useVocabularyStudy', () => {
 			expect(hasMoreCards()).toBe(true)
 
 			// Move to end
-			if (currentSession.value) {
-				;(currentSession.value as any).currentIndex = 1
+			const writableSession = currentSession.value
+				? (toRaw(currentSession.value) as unknown as StudySession)
+				: null
+			if (writableSession) {
+				writableSession.currentIndex = 1
 			}
 
 			expect(hasMoreCards()).toBe(false)
@@ -325,9 +347,13 @@ describe('useVocabularyStudy', () => {
 			await startSession('cat-1')
 
 			// Simulate some study activity
-			if (currentSession.value) {
-				;(currentSession.value.sessionStats as any).cardsStudied = 1
-				;(currentSession.value.sessionStats as any).correctAnswers = 1
+			const writableSession = currentSession.value
+				? (toRaw(currentSession.value) as unknown as StudySession)
+				: null
+			if (writableSession) {
+				writableSession.sessionStats.cardsStudied = 1
+				writableSession.sessionStats.correctAnswers = 1
+				writableSession.startTime = new Date(Date.now() - 1500)
 			}
 
 			const finalStats = await endSession()

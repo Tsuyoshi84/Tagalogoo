@@ -102,11 +102,11 @@ export function useAudioPlayback(events: AudioEvents = {}) {
 		events.onEnded?.()
 	}
 
-	const handleError = (event: Event) => {
-		const audio = event.target as HTMLAudioElement
+	const handleError = () => {
+		const audio = audioElement.value
 		let errorMessage = 'Audio playback failed'
 
-		if (audio.error) {
+		if (audio?.error) {
 			switch (audio.error.code) {
 				case MediaError.MEDIA_ERR_ABORTED:
 					errorMessage = 'Audio playback was aborted'
@@ -188,6 +188,9 @@ export function useAudioPlayback(events: AudioEvents = {}) {
 			audioElement.value.pause()
 			audioElement.value.currentTime = 0
 		}
+
+		audioState.value.isPlaying = false
+		audioState.value.currentTime = 0
 	}
 
 	/**
@@ -262,7 +265,7 @@ export function useAudioPlayback(events: AudioEvents = {}) {
 			const audio = initializeAudio(audioUrl)
 			audio.src = audioUrl
 			audio.preload = 'auto'
-		} catch (_error) {
+		} catch {
 			// Silently handle preload errors
 		}
 	}
