@@ -51,7 +51,7 @@
   - Implement responsive design for mobile and desktop
   - _Requirements: 3.1, 3.2, 5.1_
 
-- [ ] 5.2 Create CategoryCard component
+- [x] 5.2 Create CategoryCard component
   - Display category information (name, description, progress)
   - Show due card counts and completion statistics
   - Add click handlers for category selection

@@ -91,6 +91,7 @@ export interface ProgressStats {
 export interface CategoryProgress {
 	categoryId: string
 	categoryName: string
+	categoryDescription?: string
 	totalWords: number
 	wordsLearned: number
 	dueWords: number

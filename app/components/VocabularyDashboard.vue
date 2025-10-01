@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { BookOpen, Calendar, Clock, Target, TrendingUp } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
+import CategoryCard from '~/components/CategoryCard.vue'
 import { useVocabularyData } from '~/composables/useVocabularyData'
 import type { CategoryProgress, ProgressStats } from '~/types/vocabulary'
 
@@ -214,60 +215,13 @@ onMounted(() => {
 
             <!-- Categories Grid -->
             <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <div
+              <CategoryCard
                 v-for="category in categoryProgress"
                 :key="category.categoryId"
-                class="card bg-base-200 hover:bg-base-300 transition-colors cursor-pointer"
-                @click="navigateToCategory(category.categoryId)"
-              >
-                <div class="card-body">
-                  <h3 class="card-title text-lg">
-                    {{ category.categoryName }}
-                  </h3>
-
-                  <!-- Progress Stats -->
-                  <div class="space-y-3 mt-4">
-                    <div class="flex justify-between text-sm">
-                      <span>Progress</span>
-                      <span
-                        >{{ category.wordsLearned }}/{{
-                          category.totalWords
-                        }}</span
-                      >
-                    </div>
-
-                    <progress
-                      class="progress progress-primary w-full"
-                      :value="category.completionPercentage"
-                      max="100"
-                    ></progress>
-
-                    <div class="flex justify-between items-center">
-                      <div class="badge badge-sm badge-outline">
-                        {{ Math.round(category.completionPercentage) }}%
-                        Complete
-                      </div>
-                      <div
-                        v-if="category.dueWords > 0"
-                        class="badge badge-sm badge-warning"
-                      >
-                        {{ category.dueWords }} Due
-                      </div>
-                      <div v-else class="badge badge-sm badge-success">
-                        Up to Date
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Study Button -->
-                  <div class="card-actions justify-end mt-4">
-                    <button type="button" class="btn btn-primary btn-sm">
-                      <BookOpen class="w-4 h-4" />
-                      Study
-                    </button>
-                  </div>
-                </div>
-              </div>
+                :category="category"
+                @click="navigateToCategory"
+                @study="navigateToCategory"
+              />
             </div>
           </div>
         </div>

@@ -262,6 +262,7 @@ export function useVocabularyData() {
 			.select(`
 				id,
 				name,
+				description,
 				words(count)
 			`)
 			.order('sort_order', { ascending: true })
@@ -324,6 +325,7 @@ export function useVocabularyData() {
 			progress.push({
 				categoryId: category.id,
 				categoryName: category.name,
+				categoryDescription: category.description || undefined,
 				totalWords,
 				wordsLearned,
 				dueWords,
