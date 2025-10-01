@@ -5,19 +5,18 @@ import { useAudioPlayback } from '~/composables/useAudioPlayback'
 import type { Example, FlashcardData } from '~/types/vocabulary'
 
 interface Props {
+	/** Flashcard content to render */
 	flashcard: FlashcardData
+	/** Keep the card flipped without user interaction */
 	autoFlip?: boolean
 }
 
 interface Emits {
 	(e: 'flip', isFlipped: boolean): void
-	(e: 'audioPlay', audioUrl: string): void
-	(e: 'audioError', error: string): void
+	(e: 'audioPlay' | 'audioError', payload: string): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-	autoFlip: false,
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 
@@ -55,7 +54,7 @@ const handleAudioPlay = async (): Promise<void> => {
 
 	try {
 		await playAudio(audioUrl)
-	} catch (error) {
+	} catch {
 		// Audio error will be handled by the audio instance error handler
 	}
 }
@@ -66,7 +65,7 @@ const handleExampleAudioPlay = async (example: Example): Promise<void> => {
 	try {
 		stopAudio()
 		await playAudio(example.audio_url)
-	} catch (error) {
+	} catch {
 		// Audio error will be handled by the audio instance error handler
 	}
 }
@@ -116,6 +115,7 @@ defineExpose({
 							<button
 								class="btn btn-circle btn-primary btn-sm"
 								:class="{ 'loading': audioState.isLoading }"
+								type="button"
 								:disabled="audioState.isLoading || !!audioState.error"
 								:title="audioState.error || 'Play pronunciation'"
 								@click.stop="handleAudioPlay"
@@ -175,10 +175,11 @@ defineExpose({
 								
 								<!-- Example audio (if exists) -->
 								<div v-if="example.audio_url" class="flex items-center gap-2 pt-1">
-									<button
-										class="btn btn-circle btn-xs btn-outline"
-										@click.stop="handleExampleAudioPlay(example)"
-									>
+								<button
+									class="btn btn-circle btn-xs btn-outline"
+									type="button"
+									@click.stop="handleExampleAudioPlay(example)"
+								>
 										<Play class="w-3 h-3" />
 									</button>
 									
@@ -203,8 +204,7 @@ defineExpose({
 	</div>
 </template>
 
-<s
-tyle scoped>
+<style scoped>
 /* 3D flip animation styles */
 .flashcard-wrapper {
 	perspective: 1000px;
