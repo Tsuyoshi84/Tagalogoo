@@ -43,7 +43,7 @@
   - Write unit tests for audio functionality
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 5. Build vocabulary dashboard components
+- [x] 5. Build vocabulary dashboard components
 - [x] 5.1 Create VocabularyDashboard component
   - Display vocabulary categories with progress indicators
   - Show daily review counts and study streaks
@@ -58,15 +58,15 @@
   - Implement loading and empty states
   - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 6. Implement flashcard study interface
-- [ ] 6.1 Create FlashcardComponent
+- [x] 6. Implement flashcard study interface
+- [x] 6.1 Create FlashcardComponent
   - Build card flip animation between Tagalog and English
   - Display word, translation, and example sentences from examples table
   - Add conditional audio playback controls when audio exists
   - Implement responsive card design
   - _Requirements: 1.2, 1.3, 1.4, 4.1, 4.4_
 
-- [ ] 6.2 Create FlashcardStudy component
+- [x] 6.2 Create FlashcardStudy component
   - Manage study session flow and card presentation
   - Implement review buttons (Again, Hard, Good, Easy)
   - Add progress indicators and session statistics
