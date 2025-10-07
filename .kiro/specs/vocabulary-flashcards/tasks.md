@@ -81,7 +81,7 @@
   - Implement responsive statistics layout
   - _Requirements: 2.3, 5.2, 5.3_
 
-- [ ] 7.2 Create DifficultWordsReview component
+- [x] 7.2 Create DifficultWordsReview component
   - Filter and display cards marked as difficult or frequently missed
   - Implement focused review session for challenging vocabulary
   - Add progress tracking for difficult word improvement

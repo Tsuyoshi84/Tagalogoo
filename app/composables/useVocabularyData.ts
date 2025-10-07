@@ -337,6 +337,49 @@ export function useVocabularyData() {
 	}
 
 	/**
+	 * Get difficult words (frequently missed or marked as "Again")
+	 * Words are considered difficult if they have:
+	 * - High lapse count (>= 3)
+	 * - Low ease factor (< 2.0)
+	 * - Recent "Again" reviews
+	 */
+	const getDifficultWords = async (categoryId?: string): Promise<FlashcardData[]> => {
+		if (!user.value?.id) {
+			throw new Error('User must be authenticated to fetch difficult words')
+		}
+
+		let query = supabase
+			.from('words')
+			.select(`
+				*,
+				examples(*),
+				categories(*),
+				reviews!inner(*)
+			`)
+			.eq('reviews.user_id', user.value.id)
+			.or('reviews.lapses.gte.3,reviews.ease.lt.2.0')
+
+		if (categoryId) {
+			query = query.eq('category_id', categoryId)
+		}
+
+		const { data, error } = await query
+			.order('reviews.lapses', { ascending: false })
+			.order('reviews.ease', { ascending: true })
+
+		if (error) {
+			throw new Error(`Failed to fetch difficult words: ${error.message}`)
+		}
+
+		return data.map((item) => ({
+			...item,
+			examples: item.examples || [],
+			category: item.categories,
+			review: item.reviews?.[0],
+		}))
+	}
+
+	/**
 	 * Get overall progress statistics for the current user
 	 */
 	const getProgressStats = async (): Promise<ProgressStats> => {
@@ -446,6 +489,7 @@ export function useVocabularyData() {
 		getWordsByCategory,
 		getDueCards,
 		getNewCards,
+		getDifficultWords,
 
 		// Review operations
 		getUserReview,
