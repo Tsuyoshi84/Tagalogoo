@@ -73,7 +73,7 @@
   - Handle session completion and results display
   - _Requirements: 1.5, 1.6, 2.1, 3.3_
 
-- [ ] 7. Build progress tracking and statistics
+- [x] 7. Build progress tracking and statistics
 - [x] 7.1 Create ProgressStats component
   - Display learning statistics (accuracy, streaks, cards learned)
   - Show visual progress charts and achievement indicators
@@ -88,15 +88,15 @@
   - Show removal of words from difficult list when mastered
   - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 8. Add vocabulary management pages
-- [ ] 8.1 Create vocabulary index page (/vocabulary)
+- [x] 8. Add vocabulary management pages
+- [x] 8.1 Create vocabulary index page (/vocabulary)
   - Integrate VocabularyDashboard component
   - Add navigation to study modes and progress views
   - Implement authentication guards for protected routes
   - Add loading states and error handling
   - _Requirements: 1.1, 3.1, 6.1_
 
-- [ ] 8.2 Create study session page (/vocabulary/study/[categoryId])
+- [x] 8.2 Create study session page (/vocabulary/study/[categoryId])
   - Integrate FlashcardStudy component with category-specific data
   - Handle study session routing and state management
   - Add session completion redirect and results display
