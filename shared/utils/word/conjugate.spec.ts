@@ -39,13 +39,31 @@ describe('conjugate', () => {
 				incompleted: 'naglalaro',
 				contemplated: 'maglalaro',
 			},
-		])('should conjugate $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
-			const focus = 'mag'
-			expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
-			expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
-			expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
-			expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
-		})
+			// lexical additions
+			{
+				root: 'bigay',
+				infinitive: 'magbigay',
+				completed: 'nagbigay',
+				incompleted: 'nagbibigay',
+				contemplated: 'magbibigay',
+			},
+			{
+				root: 'linis',
+				infinitive: 'maglinis',
+				completed: 'naglinis',
+				incompleted: 'naglilinis',
+				contemplated: 'maglilinis',
+			},
+		])(
+			'should conjugate mag $root',
+			({ root, infinitive, completed, incompleted, contemplated }) => {
+				const focus = 'mag'
+				expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
+				expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
+				expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
+				expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+			},
+		)
 	})
 
 	describe('um', () => {
@@ -106,13 +124,31 @@ describe('conjugate', () => {
 				incompleted: 'pumupunta',
 				contemplated: 'pupunta',
 			},
-		])('should conjugate $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
-			const focus = 'um'
-			expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
-			expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
-			expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
-			expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
-		})
+			// lexical / irregular style
+			{
+				root: 'alis',
+				infinitive: 'umalis',
+				completed: 'umalis',
+				incompleted: 'umaalis',
+				contemplated: 'aalis',
+			},
+			{
+				root: 'pasok',
+				infinitive: 'pumasok',
+				completed: 'pumasok',
+				incompleted: 'pumapasok',
+				contemplated: 'papasok',
+			},
+		])(
+			'should conjugate um $root',
+			({ root, infinitive, completed, incompleted, contemplated }) => {
+				const focus = 'um'
+				expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
+				expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
+				expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
+				expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+			},
+		)
 	})
 
 	describe('in', () => {
@@ -173,12 +209,51 @@ describe('conjugate', () => {
 				incompleted: 'pinupuntahan',
 				contemplated: 'pupuntahan',
 			},
-		])('should conjugate $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
-			const focus = 'in'
-			expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
-			expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
-			expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
-			expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
-		})
+			// lexical variants / irregulars
+			{
+				root: 'sabi',
+				infinitive: 'sabihin',
+				completed: 'sinabi',
+				incompleted: 'sinasabi',
+				contemplated: 'sasabihin',
+			},
+			{
+				root: 'dala',
+				infinitive: 'dalhin',
+				completed: 'dinala',
+				incompleted: 'dinadala',
+				contemplated: 'dadalhin',
+			},
+			{
+				root: 'tawag',
+				infinitive: 'tawagin',
+				completed: 'tinawag',
+				incompleted: 'tinatawag',
+				contemplated: 'tatawagin',
+			},
+			{
+				root: 'kuha',
+				infinitive: 'kunin',
+				completed: 'kinuha',
+				incompleted: 'kinukuha',
+				contemplated: 'kukunin',
+			},
+			{
+				root: 'linis',
+				infinitive: 'linisin',
+				completed: 'nilinis',
+				incompleted: 'nililinis',
+				contemplated: 'lilinisin',
+			},
+		])(
+			'should conjugate in $root',
+			({ root, infinitive, completed, incompleted, contemplated }) => {
+				const focus = 'in'
+				expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
+				expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
+				expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
+				expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+			},
+		)
 	})
 })
