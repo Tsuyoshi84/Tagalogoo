@@ -2,9 +2,22 @@ export type Focus = 'mag' | 'um' | 'in'
 export type Aspect = 'infinitive' | 'completed' | 'incompleted' | 'contemplated'
 
 export interface ConjugateOptions {
-	root: string // e.g. "luto", "kain", "basa", "inom"
-	focus: Focus // "mag" | "um" | "in"
-	aspect: Aspect // "infinitive" | "completed" | "incompleted" | "contemplated"
+	root: string
+	focus: Focus
+	aspect: Aspect
+}
+
+export function conjugate({ root, focus, aspect }: ConjugateOptions): string {
+	const overrideResult = getOverride(root, focus, aspect)
+	if (overrideResult !== undefined) return overrideResult
+
+	return FOCUS_HANDLERS[focus](root, aspect)
+}
+
+const FOCUS_HANDLERS: Record<Focus, (root: string, aspect: Aspect) => string> = {
+	mag: conjMAG,
+	um: conjUM,
+	in: conjIN,
 }
 
 /** Optional per-root overrides for edge cases/irregulars. */
@@ -72,13 +85,10 @@ function getOverride(root: string, focus: Focus, aspect: Aspect): string | undef
 	return LEXICON[root]?.[`${focus}:${aspect}` as const]
 }
 
-/* ------------------------- helpers ------------------------- */
-
-const V = /[aeiou]/i
-const C = /[^aeiou]/i
+const VOWEL_REGEX = /[aeiou]/i
 
 function firstVowelIndex(s: string): number {
-	return s.search(V)
+	return s.search(VOWEL_REGEX)
 }
 
 /** Return the first syllable (simple heuristic: from start to first vowel inclusive). */
@@ -93,6 +103,8 @@ function firstSyllable(root: string): string {
 	return `${firstChar}${vowel}`
 }
 
+const CONSONANT_REGEX = /[^aeiou]/i
+
 /** Insert an infix (e.g., "um", "in") after the first consonant; if vowel-initial, prefix it. */
 function insertInfix(root: string, infix: string): string {
 	if (!root) return root
@@ -102,7 +114,7 @@ function insertInfix(root: string, infix: string): string {
 		return infix + root // e.g., "inom" -> "uminom"/"ininom"
 	}
 	// find first consonant index (usually 0 in Tagalog roots)
-	const fc = root.search(C)
+	const fc = root.search(CONSONANT_REGEX)
 	if (fc < 0) return infix + root
 	return root.slice(0, fc + 1) + infix + root.slice(fc + 1)
 }
@@ -114,11 +126,9 @@ function reduplicate(root: string): string {
 
 function attachPrefix(prefix: string, stem: string): string {
 	if (!stem) return prefix
-	if (V.test(stem[0] ?? '')) return `${prefix}-${stem}`
+	if (VOWEL_REGEX.test(stem[0] ?? '')) return `${prefix}-${stem}`
 	return prefix + stem
 }
-
-/* ------------------------- focus rules ------------------------- */
 
 /**
  * MAG focus:
@@ -127,7 +137,6 @@ function attachPrefix(prefix: string, stem: string): string {
  *   incomp: nag + redup(root)
  *   cont: mag + redup(root)
  */
-
 function conjMAG(root: string, aspect: Aspect): string {
 	switch (aspect) {
 		case 'infinitive':
@@ -180,7 +189,7 @@ function conjINCompleted(root: string): string {
 	const override = getOverride(root, 'in', 'completed')
 	if (override) return override
 	const first = root[0]?.toLowerCase()
-	if (root && V.test(root[0] ?? '')) return `in${root}` // inom -> ininom
+	if (root && VOWEL_REGEX.test(root[0] ?? '')) return `in${root}` // inom -> ininom
 	if (first && (first === 'l' || first === 'r')) return `ni${root}` // luto -> niluto, linis -> nilinis
 	return insertInfix(root, 'in') // kain -> kinain, basa -> binasa, pili -> pinili
 }
@@ -212,18 +221,4 @@ function conjIN(root: string, aspect: Aspect): string {
 			return r.replace(root, future)
 		}
 	}
-}
-
-const FOCUS_HANDLERS: Record<Focus, (root: string, aspect: Aspect) => string> = {
-	mag: conjMAG,
-	um: conjUM,
-	in: conjIN,
-}
-
-export function conjugate({ root, focus, aspect }: ConjugateOptions): string {
-	// override hook
-	const overrideResult = getOverride(root, focus, aspect)
-	if (overrideResult !== undefined) return overrideResult
-
-	return FOCUS_HANDLERS[focus](root, aspect)
 }
