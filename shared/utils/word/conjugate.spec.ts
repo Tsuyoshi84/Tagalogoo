@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type Aspect, conjugate, type Focus } from './conjugate.ts'
+import { conjugate } from './conjugate.ts'
 
 describe('conjugate', () => {
 	describe('mag', () => {
@@ -15,15 +15,15 @@ describe('conjugate', () => {
 				root: 'trabaho',
 				infinitive: 'magtrabaho',
 				completed: 'nagtrabaho',
-				incompleted: 'nagtrabaho',
-				contemplated: 'magtrabaho',
+				incompleted: 'nagtatrabaho',
+				contemplated: 'magtatrabaho',
 			},
 			{
 				root: 'aral',
-				infinitive: 'magaral',
-				completed: 'nagaral',
-				incompleted: 'nagararal',
-				contemplated: 'magararal',
+				infinitive: 'mag-aral',
+				completed: 'nag-aral',
+				incompleted: 'nag-aaral',
+				contemplated: 'mag-aaral',
 			},
 			{
 				root: 'lakad',
@@ -33,36 +33,19 @@ describe('conjugate', () => {
 				contemplated: 'maglalakad',
 			},
 			{
-				root: 'kanta',
-				infinitive: 'magkanta',
-				completed: 'nagkanta',
-				incompleted: 'nagkakanta',
-				contemplated: 'magkakanta',
-			},
-			{
 				root: 'laro',
 				infinitive: 'maglaro',
 				completed: 'naglaro',
 				incompleted: 'naglalaro',
 				contemplated: 'maglalaro',
 			},
-			{
-				root: 'luto-ng',
-				infinitive: 'magluto-ng',
-				completed: 'nagluto-ng',
-				incompleted: 'nagluto-ng',
-				contemplated: 'magluto-ng',
-			},
-		])(
-			'should conjugate $root with all aspects',
-			({ root, infinitive, completed, incompleted, contemplated }) => {
-				const focus = 'mag'
-				expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
-				expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
-				expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
-				expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
-			},
-		)
+		])('should conjugate $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
+			const focus = 'mag'
+			expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
+			expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
+			expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
+			expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+		})
 	})
 
 	describe('um', () => {
@@ -75,11 +58,11 @@ describe('conjugate', () => {
 				contemplated: 'kakain',
 			},
 			{
-				root: 'tulog',
-				infinitive: 'matulog',
-				completed: 'natulog',
-				incompleted: 'natutulog',
-				contemplated: 'matutulog',
+				root: 'kanta',
+				infinitive: 'kumanta',
+				completed: 'kumanta',
+				incompleted: 'kumakanta',
+				contemplated: 'kakanta',
 			},
 			{
 				root: 'takbo',
@@ -113,19 +96,23 @@ describe('conjugate', () => {
 				root: 'inom',
 				infinitive: 'uminom',
 				completed: 'uminom',
-				incompleted: 'uminom',
+				incompleted: 'umiinom',
 				contemplated: 'iinom',
 			},
-		])(
-			'should conjugate $root with all aspects',
-			({ root, infinitive, completed, incompleted, contemplated }) => {
-				const focus = 'um'
-				expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
-				expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
-				expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
-				expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+			{
+				root: 'punta',
+				infinitive: 'pumunta',
+				completed: 'pumunta',
+				incompleted: 'pumupunta',
+				contemplated: 'pupunta',
 			},
-		)
+		])('should conjugate $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
+			const focus = 'um'
+			expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
+			expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
+			expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
+			expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+		})
 	})
 
 	describe('in', () => {
@@ -154,8 +141,8 @@ describe('conjugate', () => {
 			{
 				root: 'luto',
 				infinitive: 'lutuin',
-				completed: 'linuto',
-				incompleted: 'linuluto',
+				completed: 'niluto',
+				incompleted: 'niluluto',
 				contemplated: 'lulutuin',
 			},
 			{
@@ -168,84 +155,30 @@ describe('conjugate', () => {
 			{
 				root: 'lakad',
 				infinitive: 'lakarin',
-				completed: 'linakad',
-				incompleted: 'linalakad',
+				completed: 'nilakad',
+				incompleted: 'nilalakad',
 				contemplated: 'lalakarin',
 			},
 			{
 				root: 'inom',
 				infinitive: 'inumin',
 				completed: 'ininom',
-				incompleted: 'ininom',
+				incompleted: 'iniinom',
 				contemplated: 'iinumin',
 			},
-		])(
-			'should conjugate $root with all aspects',
-			({ root, infinitive, completed, incompleted, contemplated }) => {
-				const focus = 'in'
-				expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
-				expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
-				expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
-				expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
-			},
-		)
-	})
-
-	describe('irregular verbs', () => {
-		it.each([
 			{
 				root: 'punta',
-				focus: 'mag',
-				aspect: 'infinitive',
-				expected: 'pumunta',
+				infinitive: 'puntahan',
+				completed: 'pinuntahan',
+				incompleted: 'pinupuntahan',
+				contemplated: 'pupuntahan',
 			},
-			{
-				root: 'punta',
-				focus: 'mag',
-				aspect: 'completed',
-				expected: 'pumunta',
-			},
-			{
-				root: 'punta',
-				focus: 'mag',
-				aspect: 'incompleted',
-				expected: 'pumupunta',
-			},
-			{
-				root: 'punta',
-				focus: 'mag',
-				aspect: 'contemplated',
-				expected: 'pupunta',
-			},
-			{
-				root: 'punta',
-				focus: 'in',
-				aspect: 'infinitive',
-				expected: 'puntahan',
-			},
-			{
-				root: 'punta',
-				focus: 'in',
-				aspect: 'completed',
-				expected: 'pinuntahan',
-			},
-			{
-				root: 'punta',
-				focus: 'in',
-				aspect: 'incompleted',
-				expected: 'pinupuntahan',
-			},
-			{
-				root: 'punta',
-				focus: 'in',
-				aspect: 'contemplated',
-				expected: 'pupuntahan',
-			},
-		])(
-			'should conjugate irregular verb $root with focus $focus and aspect $aspect',
-			({ root, focus, aspect, expected }) => {
-				expect(conjugate({ root, focus: focus as Focus, aspect: aspect as Aspect })).toBe(expected)
-			},
-		)
+		])('should conjugate $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
+			const focus = 'in'
+			expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
+			expect(conjugate({ root, focus, aspect: 'completed' })).toBe(completed)
+			expect(conjugate({ root, focus, aspect: 'incompleted' })).toBe(incompleted)
+			expect(conjugate({ root, focus, aspect: 'contemplated' })).toBe(contemplated)
+		})
 	})
 })
