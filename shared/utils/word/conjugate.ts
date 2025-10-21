@@ -1,5 +1,3 @@
-// tagalog-conjugator.ts
-
 export type Focus = 'mag' | 'um' | 'in'
 export type Aspect = 'infinitive' | 'completed' | 'incompleted' | 'contemplated'
 
@@ -11,8 +9,67 @@ export interface ConjugateOptions {
 
 /** Optional per-root overrides for edge cases/irregulars. */
 const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, string>>>> = {
-	// Examples (uncomment or add as you find exceptions in real usage):
-	// inom: { "in:completed": "ininom" }, // many speakers prefer "ininom"
+	// MAG/UM overrides (empty for now)
+
+	// IN focus overrides for common lexical patterns
+	basa: {
+		'in:infinitive': 'basahin',
+		'in:contemplated': 'babasahin',
+	},
+	kain: {
+		'in:infinitive': 'kainin',
+		'in:contemplated': 'kakainin',
+	},
+	sulat: {
+		'in:infinitive': 'sulatin',
+		'in:contemplated': 'susulatin',
+	},
+	luto: {
+		'in:infinitive': 'lutuin',
+		'in:contemplated': 'lulutuin',
+	},
+	takbo: {
+		'in:infinitive': 'takbuhin',
+		'in:contemplated': 'tatakbuhin',
+	},
+	lakad: {
+		'in:infinitive': 'lakarin',
+		'in:contemplated': 'lalakarin',
+	},
+	inom: {
+		'in:infinitive': 'inumin',
+		'in:contemplated': 'iinumin',
+	},
+	punta: {
+		'in:infinitive': 'puntahan',
+		'in:completed': 'pinuntahan',
+		'in:incompleted': 'pinupuntahan',
+		'in:contemplated': 'pupuntahan',
+	},
+	sabi: {
+		'in:infinitive': 'sabihin',
+		'in:contemplated': 'sasabihin',
+	},
+	dala: {
+		'in:infinitive': 'dalhin',
+		'in:contemplated': 'dadalhin',
+	},
+	tawag: {
+		'in:infinitive': 'tawagin',
+		'in:contemplated': 'tatawagin',
+	},
+	kuha: {
+		'in:infinitive': 'kunin',
+		'in:contemplated': 'kukunin',
+	},
+	linis: {
+		'in:infinitive': 'linisin',
+		'in:contemplated': 'lilinisin',
+	},
+}
+
+function getOverride(root: string, focus: Focus, aspect: Aspect): string | undefined {
+	return LEXICON[root]?.[`${focus}:${aspect}` as const]
 }
 
 /* ------------------------- helpers ------------------------- */
@@ -26,9 +83,14 @@ function firstVowelIndex(s: string): number {
 
 /** Return the first syllable (simple heuristic: from start to first vowel inclusive). */
 function firstSyllable(root: string): string {
-	const i = firstVowelIndex(root)
-	if (i < 0) return root // no vowel found (rare)
-	return root.slice(0, i + 1) // e.g., luto -> "lu", kain -> "ka", basa -> "ba", inom -> "i"
+	if (!root) return root
+	const firstChar = root[0] ?? ''
+	const fv = firstVowelIndex(root)
+	if (fv < 0) return firstChar
+	if (fv === 0) return firstChar
+	const vowel = root[fv]
+	if (!vowel) return firstChar
+	return `${firstChar}${vowel}`
 }
 
 /** Insert an infix (e.g., "um", "in") after the first consonant; if vowel-initial, prefix it. */
@@ -50,6 +112,12 @@ function reduplicate(root: string): string {
 	return firstSyllable(root) + root // luto -> luluto, kain -> kakain
 }
 
+function attachPrefix(prefix: string, stem: string): string {
+	if (!stem) return prefix
+	if (V.test(stem[0] ?? '')) return `${prefix}-${stem}`
+	return prefix + stem
+}
+
 /* ------------------------- focus rules ------------------------- */
 
 /**
@@ -59,16 +127,17 @@ function reduplicate(root: string): string {
  *   incomp: nag + redup(root)
  *   cont: mag + redup(root)
  */
+
 function conjMAG(root: string, aspect: Aspect): string {
 	switch (aspect) {
 		case 'infinitive':
-			return `mag${root}`
+			return attachPrefix('mag', root)
 		case 'completed':
-			return `nag${root}`
+			return attachPrefix('nag', root)
 		case 'incompleted':
-			return `nag${reduplicate(root)}`
+			return attachPrefix('nag', reduplicate(root))
 		case 'contemplated':
-			return `mag${reduplicate(root)}`
+			return attachPrefix('mag', reduplicate(root))
 	}
 }
 
@@ -85,17 +154,8 @@ function conjUM(root: string, aspect: Aspect): string {
 		case 'infinitive':
 		case 'completed':
 			return insertInfix(root, 'um')
-		case 'incompleted': {
-			// Build: insert "um" then reduplicate the first syllable after the infix.
-			// A simple practical form that matches common usage:
-			// e.g., luto -> lumuluto, kain -> kumakain
-			const base = insertInfix(root, 'um') // kumain / lumuto / uminom
-			const fs = firstSyllable(root) // ka / lu / i
-			// Insert redup right after the infix position:
-			// e.g., "kumain" -> "kuma" + "kain" → "kumakain"
-			// For "lumuto" -> "lumu" + "luto" → "lumuluto"
-			return base.replace(root, fs + root) // safe shortcut
-		}
+		case 'incompleted':
+			return insertInfix(reduplicate(root), 'um')
 		case 'contemplated':
 			return reduplicate(root) // kakain, luluto, iinom
 	}
@@ -116,34 +176,37 @@ function conjUM(root: string, aspect: Aspect): string {
  * NOTE: Tagalog has lexical preferences; this rule set yields the standard forms for common verbs,
  * but keep LEXICON overrides for edge cases you encounter.
  */
+function conjINCompleted(root: string): string {
+	const override = getOverride(root, 'in', 'completed')
+	if (override) return override
+	const first = root[0]?.toLowerCase()
+	if (root && V.test(root[0] ?? '')) return 'in' + root // inom -> ininom
+	if (first && (first === 'l' || first === 'r')) return 'ni' + root // luto -> niluto, linis -> nilinis
+	return insertInfix(root, 'in') // kain -> kinain, basa -> binasa, pili -> pinili
+}
+
 function conjIN(root: string, aspect: Aspect): string {
 	switch (aspect) {
 		case 'infinitive':
 			return insertInfix(root, 'in') // lutuin, kainin, inumin
 
-		case 'completed': {
-			if (/^[aeiou]/i.test(root)) return 'in' + root // inom -> ininom
-			if (/^[lr]/i.test(root)) return 'ni' + root // luto -> niluto, linis -> nilinis
-			return insertInfix(root, 'in') // kain -> kinain, basa -> binasa, pili -> pinili
-		}
+		case 'completed':
+			return conjINCompleted(root)
 
 		case 'incompleted': {
 			// decide based on which completed route we would take
-			const comp = conjIN(root, 'completed')
+			const comp = conjINCompleted(root)
 			if (comp.startsWith('ni')) {
 				return 'ni' + reduplicate(root) // niluluto, nililinís (accent ignored)
 			}
-			// infix route (kinain -> kinakain; binasa -> binabasa (note: many speakers prefer "binabasa" vs "kinabasa" etc.)
-			const fs = firstSyllable(root) // ka / ba / pi ...
-			const withInfix = insertInfix(root, 'in') // kinain / binasa / pinili
-			// Replace the raw root part after the infix with its reduplicated form:
-			return withInfix.replace(root, fs + root) // kinakain, binabasa, pinipili
+			// infix route (kinain -> kinakain; binasa -> binabasa; sinulat -> sinusulat)
+			return insertInfix(reduplicate(root), 'in')
 		}
 
 		case 'contemplated': {
 			const r = reduplicate(root) // luluto, kakain, iinom
 			// Insert -in- on the original root position (works well for common verbs)
-			const future = insertInfix(root, 'in') // lutuin, kainin, inumin
+			const future = getOverride(root, 'in', 'infinitive') ?? insertInfix(root, 'in') // lutuin, kainin, inumin
 			// Stitch: replace the first occurrence of root in r with future's root-shape
 			// e.g., "luluto" -> "lulutuin"; "kakain" -> "kakainin"; "iinom" -> "iinumin"
 			return r.replace(root, future)
@@ -151,20 +214,16 @@ function conjIN(root: string, aspect: Aspect): string {
 	}
 }
 
-/* ------------------------- public API ------------------------- */
+const FOCUS_HANDLERS: Record<Focus, (root: string, aspect: Aspect) => string> = {
+	mag: conjMAG,
+	um: conjUM,
+	in: conjIN,
+}
 
 export function conjugate({ root, focus, aspect }: ConjugateOptions): string {
 	// override hook
-	const key = `${focus}:${aspect}` as const
-	const ov = LEXICON[root]?.[key]
-	if (ov) return ov
+	const overrideResult = getOverride(root, focus, aspect)
+	if (overrideResult !== undefined) return overrideResult
 
-	switch (focus) {
-		case 'mag':
-			return conjMAG(root, aspect)
-		case 'um':
-			return conjUM(root, aspect)
-		case 'in':
-			return conjIN(root, aspect)
-	}
+	return FOCUS_HANDLERS[focus](root, aspect)
 }
