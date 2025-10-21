@@ -180,8 +180,8 @@ function conjINCompleted(root: string): string {
 	const override = getOverride(root, 'in', 'completed')
 	if (override) return override
 	const first = root[0]?.toLowerCase()
-	if (root && V.test(root[0] ?? '')) return 'in' + root // inom -> ininom
-	if (first && (first === 'l' || first === 'r')) return 'ni' + root // luto -> niluto, linis -> nilinis
+	if (root && V.test(root[0] ?? '')) return `in${root}` // inom -> ininom
+	if (first && (first === 'l' || first === 'r')) return `ni${root}` // luto -> niluto, linis -> nilinis
 	return insertInfix(root, 'in') // kain -> kinain, basa -> binasa, pili -> pinili
 }
 
@@ -197,7 +197,7 @@ function conjIN(root: string, aspect: Aspect): string {
 			// decide based on which completed route we would take
 			const comp = conjINCompleted(root)
 			if (comp.startsWith('ni')) {
-				return 'ni' + reduplicate(root) // niluluto, nililinís (accent ignored)
+				return `ni${reduplicate(root)}` // niluluto, nililinís (accent ignored)
 			}
 			// infix route (kinain -> kinakain; binasa -> binabasa; sinulat -> sinusulat)
 			return insertInfix(reduplicate(root), 'in')
