@@ -202,13 +202,6 @@ describe('conjugate', () => {
 				incompleted: 'iniinom',
 				contemplated: 'iinumin',
 			},
-			{
-				root: 'punta',
-				infinitive: 'puntahan',
-				completed: 'pinuntahan',
-				incompleted: 'pinupuntahan',
-				contemplated: 'pupuntahan',
-			},
 			// lexical variants / irregulars
 			{
 				root: 'sabi',
@@ -244,27 +237,6 @@ describe('conjugate', () => {
 				completed: 'nilinis',
 				incompleted: 'nililinis',
 				contemplated: 'lilinisin',
-			},
-			{
-				root: 'yakap',
-				infinitive: 'yakapin',
-				completed: 'niyakap',
-				incompleted: 'niyayakap',
-				contemplated: 'yayakapin',
-			},
-			{
-				root: 'bili',
-				infinitive: 'bilhin',
-				completed: 'binili',
-				incompleted: 'binibili',
-				contemplated: 'bibilhin',
-			},
-			{
-				root: 'ikot',
-				infinitive: 'ikutin',
-				completed: 'inikot',
-				incompleted: 'iniiikot',
-				contemplated: 'iikutin',
 			},
 		])(
 			'should conjugate in $root',

@@ -50,13 +50,6 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		'in:infinitive': 'inumin',
 		'in:contemplated': 'iinumin',
 	},
-	punta: {
-		// Special suffix: -han instead of -in
-		'in:infinitive': 'puntahan',
-		'in:completed': 'pinuntahan',
-		'in:incompleted': 'pinupuntahan',
-		'in:contemplated': 'pupuntahan',
-	},
 	sabi: {
 		// Exception: uses -hin (ends in 'i' but after 'b', not 'l' or 'r')
 		'in:infinitive': 'sabihin',
@@ -70,7 +63,6 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 	kuha: {
 		// Complex: kuha → kunin (drops 'ha', adds 'n')
 		'in:infinitive': 'kunin',
-		'in:contemplated': 'kukunin',
 	},
 	yakap: {
 		// Special: uses ni- prefix in completed forms
