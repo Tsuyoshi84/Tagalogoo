@@ -75,6 +75,21 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		'in:infinitive': 'linisin',
 		'in:contemplated': 'lilinisin',
 	},
+	yakap: {
+		'in:infinitive': 'yakapin',
+		'in:completed': 'niyakap',
+		'in:incompleted': 'niyayakap',
+		'in:contemplated': 'yayakapin',
+	},
+	bili: {
+		'in:infinitive': 'bilhin',
+		'in:contemplated': 'bibilhin',
+	},
+	ikot: {
+		'in:infinitive': 'ikutin',
+		'in:incompleted': 'iniiikot',
+		'in:contemplated': 'iikutin',
+	},
 }
 
 function getOverride(root: string, focus: Focus, aspect: Aspect): string | undefined {
