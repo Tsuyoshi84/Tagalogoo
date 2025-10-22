@@ -25,10 +25,6 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 	// MAG/UM overrides (empty for now)
 
 	// IN focus overrides for common lexical patterns
-	basa: {
-		'in:infinitive': 'basahin',
-		'in:contemplated': 'babasahin',
-	},
 	kain: {
 		'in:infinitive': 'kainin',
 		'in:contemplated': 'kakainin',
@@ -104,6 +100,33 @@ function firstSyllable(root: string): string {
 }
 
 const CONSONANT_REGEX = /[^aeiou]/i
+
+function shouldUseHinSuffix(root: string): boolean {
+	if (!root) return false
+	const lastChar = root[root.length - 1]?.toLowerCase()
+	if (!lastChar) return false
+	return VOWEL_REGEX.test(lastChar)
+}
+
+function buildHinForm(root: string): string {
+	if (!root) return root
+	const lastChar = root[root.length - 1]?.toLowerCase()
+	if (!lastChar) return `${root}hin`
+	if (lastChar === 'i') {
+		for (let i = root.length - 2; i >= 0; i -= 1) {
+			const char = root[i]
+			if (char && VOWEL_REGEX.test(char)) {
+				const vowel = char.toLowerCase()
+				if (vowel === 'u' || vowel === 'o') {
+					return `${root}hin`
+				}
+				break
+			}
+		}
+		return `${root.slice(0, -1)}hin`
+	}
+	return `${root}hin`
+}
 
 /** Insert an infix (e.g., "um", "in") after the first consonant; if vowel-initial, prefix it. */
 function insertInfix(root: string, infix: string): string {
@@ -195,9 +218,11 @@ function conjINCompleted(root: string): string {
 }
 
 function conjIN(root: string, aspect: Aspect): string {
+	const useHinSuffix = shouldUseHinSuffix(root)
+
 	switch (aspect) {
 		case 'infinitive':
-			return insertInfix(root, 'in') // lutuin, kainin, inumin
+			return useHinSuffix ? buildHinForm(root) : insertInfix(root, 'in')
 
 		case 'completed':
 			return conjINCompleted(root)
@@ -214,8 +239,12 @@ function conjIN(root: string, aspect: Aspect): string {
 
 		case 'contemplated': {
 			const r = reduplicate(root) // luluto, kakain, iinom
-			// Insert -in- on the original root position (works well for common verbs)
-			const future = getOverride(root, 'in', 'infinitive') ?? insertInfix(root, 'in') // lutuin, kainin, inumin
+			const futureOverride = getOverride(root, 'in', 'infinitive')
+			if (useHinSuffix) {
+				const futureStem = futureOverride ?? buildHinForm(root)
+				return r.replace(root, futureStem)
+			}
+			const future = futureOverride ?? insertInfix(root, 'in') // lutuin, kainin, inumin
 			// Stitch: replace the first occurrence of root in r with future's root-shape
 			// e.g., "luluto" -> "lulutuin"; "kakain" -> "kakainin"; "iinom" -> "iinumin"
 			return r.replace(root, future)
