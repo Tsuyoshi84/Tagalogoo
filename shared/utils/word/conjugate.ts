@@ -36,11 +36,6 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		'in:infinitive': 'takbuhin',
 		'in:contemplated': 'tatakbuhin',
 	},
-	lakad: {
-		// lakad → lakarin (d → r, add -in)
-		'in:infinitive': 'lakarin',
-		'in:contemplated': 'lalakarin',
-	},
 }
 
 function getOverride(root: string, focus: Focus, aspect: Aspect): string | undefined {
@@ -85,6 +80,18 @@ function transformOToU(root: string): string {
 	const match = root.match(/[ou](?=[^ou]*$)/i)
 	if (match && match.index !== undefined) {
 		return root.slice(0, match.index) + 'u' + root.slice(match.index + 1)
+	}
+	return root
+}
+
+/**
+ * Transform final 'd' to 'r' for -in verbs.
+ * This is a regular phonological rule in Tagalog.
+ * Examples: lakad → lakar, nood → noor
+ */
+function transformDToR(root: string): string {
+	if (root.endsWith('d')) {
+		return root.slice(0, -1) + 'r'
 	}
 	return root
 }
@@ -207,9 +214,12 @@ function conjIN(root: string, aspect: Aspect): string {
 				return buildHinForm(root)
 			}
 
-			// For consonant-ending roots: apply o/u → u transformation before adding -in
-			// inom → inumin, kain → kainin
-			const transformed = transformOToU(root)
+			// For consonant-ending roots: apply transformations before adding -in
+			// 1. d → r: lakad → lakar
+			// 2. o/u → u: inom → inum
+			// Then add -in: lakarin, inumin, kainin
+			let transformed = transformDToR(root)
+			transformed = transformOToU(transformed)
 			return `${transformed}in`
 		}
 
@@ -240,9 +250,12 @@ function conjIN(root: string, aspect: Aspect): string {
 				return r.replace(root, futureStem)
 			}
 
-			// For consonant-ending roots: apply o/u → u transformation before adding -in
-			// inom → iinumin (iinom → inumin), kain → kakainin (kakain → kainin)
-			const transformed = transformOToU(root)
+			// For consonant-ending roots: apply transformations before adding -in
+			// 1. d → r: lakad → lakar
+			// 2. o/u → u: inom → inum
+			// Then add -in: lakarin, inumin, kainin
+			let transformed = transformDToR(root)
+			transformed = transformOToU(transformed)
 			const future = `${transformed}in`
 			// Stitch: replace the first occurrence of root in r with the transformed infinitive
 			return r.replace(root, future)
