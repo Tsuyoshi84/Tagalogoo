@@ -31,11 +31,6 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		// Complex: kuha → kunin (drops 'ha', adds 'n')
 		'in:infinitive': 'kunin',
 	},
-	takbo: {
-		// takbo → takbuhin (o → u, add -hin not -in)
-		'in:infinitive': 'takbuhin',
-		'in:contemplated': 'tatakbuhin',
-	},
 }
 
 function getOverride(root: string, focus: Focus, aspect: Aspect): string | undefined {
@@ -99,12 +94,20 @@ function transformDToR(root: string): string {
 function buildHinForm(root: string): string {
 	if (!root) return root
 	const lastChar = root[root.length - 1]?.toLowerCase()
+	const firstChar = root[0]?.toLowerCase()
 
-	// If root ends with 'o' or 'u', transform to 'u' before adding 'in'
-	// luto → lutuin, huli → hulihin (though most 'u'-ending use different pattern)
-	if (lastChar === 'o' || lastChar === 'u') {
+	// Special case: roots starting with 'l' or 'r' that end with 'o' or 'u'
+	// These use -in suffix instead of -hin (e.g., luto → lutuin, not lutuhin)
+	if ((lastChar === 'o' || lastChar === 'u') && (firstChar === 'l' || firstChar === 'r')) {
 		const transformed = transformOToU(root)
 		return `${transformed}in`
+	}
+
+	// If root ends with 'o' or 'u', transform to 'u' before adding 'hin'
+	// takbo → takbuhin
+	if (lastChar === 'o' || lastChar === 'u') {
+		const transformed = transformOToU(root)
+		return `${transformed}hin`
 	}
 
 	// For other vowel endings (a, e, i), add 'hin'
