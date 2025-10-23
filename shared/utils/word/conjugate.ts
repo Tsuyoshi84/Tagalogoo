@@ -22,39 +22,6 @@ const FOCUS_HANDLERS: Record<Focus, (root: string, aspect: Aspect) => string> = 
 
 /** Optional per-root overrides for edge cases/irregulars. */
 const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, string>>>> = {
-	// MAG/UM overrides (empty for now)
-
-	// IN focus overrides for lexical irregularities (morphophonemic changes and exceptions)
-	basa: {
-		// Exception: uses -hin despite not matching -li/-ri/-y pattern
-		'in:infinitive': 'basahin',
-		'in:contemplated': 'babasahin',
-	},
-	luto: {
-		// Stem vowel change: o → u before suffix
-		'in:infinitive': 'lutuin',
-		'in:contemplated': 'lulutuin',
-	},
-	takbo: {
-		// Stem vowel change: o → u + uses -hin
-		'in:infinitive': 'takbuhin',
-		'in:contemplated': 'tatakbuhin',
-	},
-	lakad: {
-		// Stem consonant change: d → r before suffix
-		'in:infinitive': 'lakarin',
-		'in:contemplated': 'lalakarin',
-	},
-	inom: {
-		// Stem vowel change: o → u before suffix
-		'in:infinitive': 'inumin',
-		'in:contemplated': 'iinumin',
-	},
-	sabi: {
-		// Exception: uses -hin (ends in 'i' but after 'b', not 'l' or 'r')
-		'in:infinitive': 'sabihin',
-		'in:contemplated': 'sasabihin',
-	},
 	dala: {
 		// Drops final vowel before -hin
 		'in:infinitive': 'dalhin',
@@ -64,18 +31,20 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		// Complex: kuha → kunin (drops 'ha', adds 'n')
 		'in:infinitive': 'kunin',
 	},
-	yakap: {
-		// Special: uses ni- prefix in completed forms
-		'in:infinitive': 'yakapin',
-		'in:completed': 'niyakap',
-		'in:incompleted': 'niyayakap',
-		'in:contemplated': 'yayakapin',
+	takbo: {
+		// takbo → takbuhin (o → u, add -hin not -in)
+		'in:infinitive': 'takbuhin',
+		'in:contemplated': 'tatakbuhin',
 	},
-	ikot: {
-		// Stem vowel change: o → u before suffix
-		'in:infinitive': 'ikutin',
-		'in:incompleted': 'iniiikot',
-		'in:contemplated': 'iikutin',
+	lakad: {
+		// lakad → lakarin (d → r, add -in)
+		'in:infinitive': 'lakarin',
+		'in:contemplated': 'lalakarin',
+	},
+	inom: {
+		// inom → inumin (internal o → u, add -in)
+		'in:infinitive': 'inumin',
+		'in:contemplated': 'iinumin',
 	},
 }
 
@@ -105,42 +74,29 @@ const CONSONANT_REGEX = /[^aeiou]/i
 
 function shouldUseHinSuffix(root: string): boolean {
 	if (!root) return false
-	const lowerRoot = root.toLowerCase()
-	// Roots ending in -li, -ri, -lay, -ray, -y favor -hin
-	if (
-		lowerRoot.endsWith('li') ||
-		lowerRoot.endsWith('ri') ||
-		lowerRoot.endsWith('lay') ||
-		lowerRoot.endsWith('ray') ||
-		lowerRoot.endsWith('y')
-	) {
-		return true
-	}
-	// Most other roots (consonant-final or vowel-final) use -in
-	return false
+	const lastChar = root[root.length - 1]?.toLowerCase()
+	// Use -hin suffix when root ends with a vowel (especially o, u, but also a, e, i)
+	return lastChar !== undefined && VOWEL_REGEX.test(lastChar)
 }
 
 function buildHinForm(root: string): string {
 	if (!root) return root
-	const lowerRoot = root.toLowerCase()
+	const lastChar = root[root.length - 1]?.toLowerCase()
 
-	// Handle -li, -ri patterns: drop 'i' and add 'hin'
-	// bili → bilhin, pili → pilihin
-	if (lowerRoot.endsWith('li') || lowerRoot.endsWith('ri')) {
-		return `${root.slice(0, -1)}hin`
+	// If root ends with 'o', change it to 'u' before adding 'in'
+	// luto → lutuin (NOT lutuhin)
+	if (lastChar === 'o') {
+		return `${root.slice(0, -1)}uin`
 	}
 
-	// Handle -lay, -ray patterns: just add 'hin'
-	if (lowerRoot.endsWith('lay') || lowerRoot.endsWith('ray')) {
-		return `${root}hin`
+	// If root ends with 'u', just add 'in'
+	// (though most 'u'-ending roots are rare)
+	if (lastChar === 'u') {
+		return `${root}in`
 	}
 
-	// Handle -y pattern: just add 'hin'
-	if (lowerRoot.endsWith('y')) {
-		return `${root}hin`
-	}
-
-	// Default: add 'hin' (though this shouldn't be reached if shouldUseHinSuffix is correct)
+	// For other vowel endings (a, e, i), add 'hin'
+	// dala → dalhin, kuha → kuhin (though kuha is irregular and overridden in LEXICON)
 	return `${root}hin`
 }
 
@@ -258,9 +214,13 @@ function conjIN(root: string, aspect: Aspect): string {
 			const r = reduplicate(root) // luluto, kakain, iinom
 			const futureOverride = getOverride(root, 'in', 'infinitive')
 			if (useHinSuffix) {
+				// For vowel-ending roots: use -hin suffix form
+				// luto → lulutuin (luluto + utuin), dala → dadalhin (dadala + alhin)
 				const futureStem = futureOverride ?? buildHinForm(root)
 				return r.replace(root, futureStem)
 			}
+			// For consonant-ending roots: use -in suffix
+			// kain → kakainin (kakain + in), bili → bibilhin (bibili + hin) - but bili is vowel-ending
 			const future = futureOverride ?? `${root}in` // lutuin, kainin, inumin
 			// Stitch: replace the first occurrence of root in r with future's root-shape
 			// e.g., "luluto" -> "lulutuin"; "kakain" -> "kakainin"; "iinom" -> "iinumin"
