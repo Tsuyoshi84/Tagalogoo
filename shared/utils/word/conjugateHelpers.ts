@@ -7,6 +7,7 @@ const LAST_OU_REGEX = /[ou](?=[^ou]*$)/i
 
 /**
  * Find the index of the first vowel in a string.
+ * @param string - The string to search for a vowel
  * @returns Index of first vowel, or -1 if none found
  */
 export function firstVowelIndex(string: string): number {
@@ -16,6 +17,8 @@ export function firstVowelIndex(string: string): number {
 /**
  * Extract the first syllable using a simple heuristic.
  * Returns from start to first vowel inclusive (CV pattern).
+ * @param root - The word to extract the first syllable from
+ * @returns The first syllable (consonant + vowel)
  * @example firstSyllable('luto') // 'lu'
  * @example firstSyllable('kain') // 'ka'
  */
@@ -31,6 +34,8 @@ export function firstSyllable(root: string): string {
 
 /**
  * Reduplicate the first syllable of the root.
+ * @param root - The word to reduplicate
+ * @returns The reduplicated form with the first syllable repeated
  * @example reduplicate('luto') // 'luluto'
  * @example reduplicate('kain') // 'kakain'
  */
@@ -40,6 +45,9 @@ export function reduplicate(root: string): string {
 
 /**
  * Attach a prefix to a stem, using hyphen if stem is vowel-initial.
+ * @param prefix - The prefix to attach (e.g., 'mag', 'nag')
+ * @param stem - The stem word to attach the prefix to
+ * @returns The prefixed form, with hyphen if stem starts with a vowel
  * @example attachPrefix('mag', 'luto') // 'magluto'
  * @example attachPrefix('mag', 'aral') // 'mag-aral'
  */
@@ -51,6 +59,9 @@ export function attachPrefix(prefix: string, stem: string): string {
 
 /**
  * Insert an infix after the first consonant, or prefix if vowel-initial.
+ * @param root - The root word to insert the infix into
+ * @param infix - The infix to insert (e.g., 'um', 'in')
+ * @returns The word with the infix inserted, or prefixed if vowel-initial
  * @example insertInfix('luto', 'um') // 'lumuto'
  * @example insertInfix('inom', 'um') // 'uminom' (vowel-initial)
  */
@@ -72,6 +83,9 @@ export function insertInfix(root: string, infix: string): string {
 
 /**
  * Helper to check if character is in the given array.
+ * @param char - The character to check
+ * @param chars - The array of characters to check against
+ * @returns `true` if the character is in the array, `false` otherwise
  */
 export function isOneOf(char: string | undefined, chars: readonly string[]): boolean {
 	return char !== undefined && chars.includes(char)
@@ -80,6 +94,8 @@ export function isOneOf(char: string | undefined, chars: readonly string[]): boo
 /**
  * Transform the last 'o' or 'u' to 'u' in the root.
  * This is a regular phonological rule for -in/-hin conjugation.
+ * @param root - The root word to transform
+ * @returns The root with the last 'o' or 'u' changed to 'u'
  * @example transformOToU('luto') // 'lutu'
  * @example transformOToU('inom') // 'inum'
  */
@@ -94,6 +110,8 @@ export function transformOToU(root: string): string {
 /**
  * Transform final 'd' to 'r'.
  * This is a regular phonological rule in Tagalog for -in verbs.
+ * @param root - The root word to transform
+ * @returns The root with final 'd' changed to 'r', or unchanged if it doesn't end with 'd'
  * @example transformDToR('lakad') // 'lakar'
  * @example transformDToR('nood') // 'noor'
  */
