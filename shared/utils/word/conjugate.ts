@@ -41,11 +41,6 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		'in:infinitive': 'lakarin',
 		'in:contemplated': 'lalakarin',
 	},
-	inom: {
-		// inom → inumin (internal o → u, add -in)
-		'in:infinitive': 'inumin',
-		'in:contemplated': 'iinumin',
-	},
 }
 
 function getOverride(root: string, focus: Focus, aspect: Aspect): string | undefined {
@@ -79,20 +74,30 @@ function shouldUseHinSuffix(root: string): boolean {
 	return lastChar !== undefined && VOWEL_REGEX.test(lastChar)
 }
 
+/**
+ * Transform 'o' or 'u' to 'u' in the root before adding suffix.
+ * Used for building infinitive forms with -in or -hin.
+ * Examples: luto → lutu, inom → inum
+ */
+function transformOToU(root: string): string {
+	// Find the last occurrence of 'o' or 'u' and change it to 'u'
+	// This handles both vowel-ending (luto) and consonant-ending with internal o/u (inom)
+	const match = root.match(/[ou](?=[^ou]*$)/i)
+	if (match && match.index !== undefined) {
+		return root.slice(0, match.index) + 'u' + root.slice(match.index + 1)
+	}
+	return root
+}
+
 function buildHinForm(root: string): string {
 	if (!root) return root
 	const lastChar = root[root.length - 1]?.toLowerCase()
 
-	// If root ends with 'o', change it to 'u' before adding 'in'
-	// luto → lutuin (NOT lutuhin)
-	if (lastChar === 'o') {
-		return `${root.slice(0, -1)}uin`
-	}
-
-	// If root ends with 'u', just add 'in'
-	// (though most 'u'-ending roots are rare)
-	if (lastChar === 'u') {
-		return `${root}in`
+	// If root ends with 'o' or 'u', transform to 'u' before adding 'in'
+	// luto → lutuin, huli → hulihin (though most 'u'-ending use different pattern)
+	if (lastChar === 'o' || lastChar === 'u') {
+		const transformed = transformOToU(root)
+		return `${transformed}in`
 	}
 
 	// For other vowel endings (a, e, i), add 'hin'
@@ -193,9 +198,20 @@ function conjIN(root: string, aspect: Aspect): string {
 	const useHinSuffix = shouldUseHinSuffix(root)
 
 	switch (aspect) {
-		case 'infinitive':
+		case 'infinitive': {
 			// Infinitive uses suffixes: -in or -hin
-			return useHinSuffix ? buildHinForm(root) : `${root}in`
+			const override = getOverride(root, 'in', 'infinitive')
+			if (override) return override
+
+			if (useHinSuffix) {
+				return buildHinForm(root)
+			}
+
+			// For consonant-ending roots: apply o/u → u transformation before adding -in
+			// inom → inumin, kain → kainin
+			const transformed = transformOToU(root)
+			return `${transformed}in`
+		}
 
 		case 'completed':
 			return conjINCompleted(root)
@@ -213,17 +229,22 @@ function conjIN(root: string, aspect: Aspect): string {
 		case 'contemplated': {
 			const r = reduplicate(root) // luluto, kakain, iinom
 			const futureOverride = getOverride(root, 'in', 'infinitive')
+			if (futureOverride) {
+				return r.replace(root, futureOverride)
+			}
+
 			if (useHinSuffix) {
-				// For vowel-ending roots: use -hin suffix form
-				// luto → lulutuin (luluto + utuin), dala → dadalhin (dadala + alhin)
-				const futureStem = futureOverride ?? buildHinForm(root)
+				// For vowel-ending roots: use -hin suffix form with o/u → u transformation
+				// luto → lulutuin (luluto → lutuin)
+				const futureStem = buildHinForm(root)
 				return r.replace(root, futureStem)
 			}
-			// For consonant-ending roots: use -in suffix
-			// kain → kakainin (kakain + in), bili → bibilhin (bibili + hin) - but bili is vowel-ending
-			const future = futureOverride ?? `${root}in` // lutuin, kainin, inumin
-			// Stitch: replace the first occurrence of root in r with future's root-shape
-			// e.g., "luluto" -> "lulutuin"; "kakain" -> "kakainin"; "iinom" -> "iinumin"
+
+			// For consonant-ending roots: apply o/u → u transformation before adding -in
+			// inom → iinumin (iinom → inumin), kain → kakainin (kakain → kainin)
+			const transformed = transformOToU(root)
+			const future = `${transformed}in`
+			// Stitch: replace the first occurrence of root in r with the transformed infinitive
 			return r.replace(root, future)
 		}
 	}
