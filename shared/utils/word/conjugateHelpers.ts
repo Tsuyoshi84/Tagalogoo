@@ -3,6 +3,7 @@ export const VOWEL_REGEX = /[aeiou]/i
 export const CONSONANT_REGEX = /[^aeiou]/i
 export const LIQUID_CONSONANTS = ['l', 'r'] as const
 export const HIGH_BACK_VOWELS = ['o', 'u'] as const
+const LAST_OU_REGEX = /[ou](?=[^ou]*$)/i
 
 /**
  * Find the index of the first vowel in a string.
@@ -83,9 +84,9 @@ export function isOneOf(char: string | undefined, chars: readonly string[]): boo
  * @example transformOToU('inom') // 'inum'
  */
 export function transformOToU(root: string): string {
-	const match = root.match(/[ou](?=[^ou]*$)/i)
+	const match = root.match(LAST_OU_REGEX)
 	if (match && match.index !== undefined) {
-		return root.slice(0, match.index) + 'u' + root.slice(match.index + 1)
+		return `${root.slice(0, match.index)}u${root.slice(match.index + 1)}`
 	}
 	return root
 }
@@ -97,5 +98,5 @@ export function transformOToU(root: string): string {
  * @example transformDToR('nood') // 'noor'
  */
 export function transformDToR(root: string): string {
-	return root.endsWith('d') ? root.slice(0, -1) + 'r' : root
+	return root.endsWith('d') ? `${root.slice(0, -1)}r` : root
 }
