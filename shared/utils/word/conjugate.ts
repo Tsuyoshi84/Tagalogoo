@@ -20,7 +20,10 @@ const FOCUS_HANDLERS: Record<Focus, (root: string, aspect: Aspect) => string> = 
 	in: conjIN,
 }
 
-/** Optional per-root overrides for edge cases/irregulars. */
+/**
+ * Optional per-root overrides for edge cases/irregulars.
+ * DO NOT add regular, predictable verb forms here.
+ */
 const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, string>>>> = {
 	dala: {
 		// Drops final vowel before -hin
@@ -37,41 +40,55 @@ function getOverride(root: string, focus: Focus, aspect: Aspect): string | undef
 	return LEXICON[root]?.[`${focus}:${aspect}` as const]
 }
 
+// Phonological constants
 const VOWEL_REGEX = /[aeiou]/i
+const CONSONANT_REGEX = /[^aeiou]/i
+const LIQUID_CONSONANTS = ['l', 'r'] as const
+const HIGH_BACK_VOWELS = ['o', 'u'] as const
 
-function firstVowelIndex(s: string): number {
-	return s.search(VOWEL_REGEX)
+/**
+ * Find the index of the first vowel in a string.
+ * @returns Index of first vowel, or -1 if none found
+ */
+function firstVowelIndex(string: string): number {
+	return string.search(VOWEL_REGEX)
 }
 
-/** Return the first syllable (simple heuristic: from start to first vowel inclusive). */
+/**
+ * Extract the first syllable using a simple heuristic.
+ * Returns from start to first vowel inclusive (CV pattern).
+ * @example firstSyllable('luto') // 'lu'
+ * @example firstSyllable('kain') // 'ka'
+ */
 function firstSyllable(root: string): string {
 	if (!root) return root
 	const firstChar = root[0] ?? ''
-	const fv = firstVowelIndex(root)
-	if (fv < 0) return firstChar
-	if (fv === 0) return firstChar
-	const vowel = root[fv]
+	const firstVowelIdx = firstVowelIndex(root)
+	if (firstVowelIdx <= 0) return firstChar
+	const vowel = root[firstVowelIdx]
 	if (!vowel) return firstChar
 	return `${firstChar}${vowel}`
 }
 
-const CONSONANT_REGEX = /[^aeiou]/i
-
+/**
+ * Determine if a root should use the -hin suffix instead of -in.
+ * Applies when root ends with a vowel.
+ * @example shouldUseHinSuffix('luto') // true
+ * @example shouldUseHinSuffix('kain') // false
+ */
 function shouldUseHinSuffix(root: string): boolean {
 	if (!root) return false
 	const lastChar = root[root.length - 1]?.toLowerCase()
-	// Use -hin suffix when root ends with a vowel (especially o, u, but also a, e, i)
 	return lastChar !== undefined && VOWEL_REGEX.test(lastChar)
 }
 
 /**
- * Transform 'o' or 'u' to 'u' in the root before adding suffix.
- * Used for building infinitive forms with -in or -hin.
- * Examples: luto → lutu, inom → inum
+ * Transform the last 'o' or 'u' to 'u' in the root.
+ * This is a regular phonological rule for -in/-hin conjugation.
+ * @example transformOToU('luto') // 'lutu'
+ * @example transformOToU('inom') // 'inum'
  */
 function transformOToU(root: string): string {
-	// Find the last occurrence of 'o' or 'u' and change it to 'u'
-	// This handles both vowel-ending (luto) and consonant-ending with internal o/u (inom)
 	const match = root.match(/[ou](?=[^ou]*$)/i)
 	if (match && match.index !== undefined) {
 		return root.slice(0, match.index) + 'u' + root.slice(match.index + 1)
@@ -80,64 +97,90 @@ function transformOToU(root: string): string {
 }
 
 /**
- * Transform final 'd' to 'r' for -in verbs.
- * This is a regular phonological rule in Tagalog.
- * Examples: lakad → lakar, nood → noor
+ * Transform final 'd' to 'r'.
+ * This is a regular phonological rule in Tagalog for -in verbs.
+ * @example transformDToR('lakad') // 'lakar'
+ * @example transformDToR('nood') // 'noor'
  */
 function transformDToR(root: string): string {
-	if (root.endsWith('d')) {
-		return root.slice(0, -1) + 'r'
-	}
-	return root
+	return root.endsWith('d') ? root.slice(0, -1) + 'r' : root
 }
 
+/**
+ * Helper to check if character is in the given array.
+ */
+function isOneOf(char: string | undefined, chars: readonly string[]): boolean {
+	return char !== undefined && chars.includes(char)
+}
+
+/**
+ * Build the -hin form of the infinitive for vowel-ending roots.
+ * Handles special cases like liquid consonant initials.
+ * @example buildHinForm('luto') // 'lutuin' (liquid + o/u uses -in)
+ * @example buildHinForm('takbo') // 'takbuhin' (non-liquid + o/u uses -hin)
+ * @example buildHinForm('dala') // 'dalhin' (other vowels use -hin)
+ */
 function buildHinForm(root: string): string {
 	if (!root) return root
 	const lastChar = root[root.length - 1]?.toLowerCase()
 	const firstChar = root[0]?.toLowerCase()
 
-	// Special case: roots starting with 'l' or 'r' that end with 'o' or 'u'
-	// These use -in suffix instead of -hin (e.g., luto → lutuin, not lutuhin)
-	if ((lastChar === 'o' || lastChar === 'u') && (firstChar === 'l' || firstChar === 'r')) {
-		const transformed = transformOToU(root)
-		return `${transformed}in`
+	// Roots starting with liquid consonants (l/r) and ending with o/u use -in
+	const isLiquidInitial = isOneOf(firstChar, LIQUID_CONSONANTS)
+	const endsWithHighBackVowel = isOneOf(lastChar, HIGH_BACK_VOWELS)
+
+	if (isLiquidInitial && endsWithHighBackVowel) {
+		return `${transformOToU(root)}in`
 	}
 
-	// If root ends with 'o' or 'u', transform to 'u' before adding 'hin'
-	// takbo → takbuhin
-	if (lastChar === 'o' || lastChar === 'u') {
-		const transformed = transformOToU(root)
-		return `${transformed}hin`
+	// Other roots ending with o/u transform and use -hin
+	if (endsWithHighBackVowel) {
+		return `${transformOToU(root)}hin`
 	}
 
-	// For other vowel endings (a, e, i), add 'hin'
-	// dala → dalhin, kuha → kuhin (though kuha is irregular and overridden in LEXICON)
+	// Other vowel endings (a, e, i) simply add -hin
 	return `${root}hin`
 }
 
-/** Insert an infix (e.g., "um", "in") after the first consonant; if vowel-initial, prefix it. */
+/**
+ * Insert an infix after the first consonant, or prefix if vowel-initial.
+ * @example insertInfix('luto', 'um') // 'lumuto'
+ * @example insertInfix('inom', 'um') // 'uminom' (vowel-initial)
+ */
 function insertInfix(root: string, infix: string): string {
 	if (!root) return root
-	const fv = firstVowelIndex(root)
-	if (fv === 0) {
-		// vowel-initial root: prefix the infix
-		return infix + root // e.g., "inom" -> "uminom"/"ininom"
+	const firstVowelIdx = firstVowelIndex(root)
+
+	// Vowel-initial: prefix the infix
+	if (firstVowelIdx === 0) {
+		return infix + root
 	}
-	// find first consonant index (usually 0 in Tagalog roots)
-	const fc = root.search(CONSONANT_REGEX)
-	if (fc < 0) return infix + root
-	return root.slice(0, fc + 1) + infix + root.slice(fc + 1)
+
+	// Find first consonant and insert after it
+	const firstConsonantIdx = root.search(CONSONANT_REGEX)
+	if (firstConsonantIdx < 0) return infix + root
+
+	return root.slice(0, firstConsonantIdx + 1) + infix + root.slice(firstConsonantIdx + 1)
 }
 
-/** Reduplicate first syllable (CV… heuristic). */
+/**
+ * Reduplicate the first syllable of the root.
+ * @example reduplicate('luto') // 'luluto'
+ * @example reduplicate('kain') // 'kakain'
+ */
 function reduplicate(root: string): string {
-	return firstSyllable(root) + root // luto -> luluto, kain -> kakain
+	return firstSyllable(root) + root
 }
 
+/**
+ * Attach a prefix to a stem, using hyphen if stem is vowel-initial.
+ * @example attachPrefix('mag', 'luto') // 'magluto'
+ * @example attachPrefix('mag', 'aral') // 'mag-aral'
+ */
 function attachPrefix(prefix: string, stem: string): string {
 	if (!stem) return prefix
-	if (VOWEL_REGEX.test(stem[0] ?? '')) return `${prefix}-${stem}`
-	return prefix + stem
+	const isVowelInitial = VOWEL_REGEX.test(stem[0] ?? '')
+	return isVowelInitial ? `${prefix}-${stem}` : prefix + stem
 }
 
 /**
@@ -181,87 +224,80 @@ function conjUM(root: string, aspect: Aspect): string {
 }
 
 /**
- * IN focus (object):
- *   inf:      insert -in- (after 1st consonant; prefix if vowel-initial) → lutuin, kainin, inumin
- *   comp:     either infix -in- (kinain, binasa, pinili) OR prefix ni- (niluto, nilinis)
- *             Pragmatic rule:
- *               - if vowel-initial: prefix "in": in + root (ininom)
- *               - if starts with [lr]: prefer "ni" + root (niluto, nilinis)
- *               - else: insert infix "in" (kinain, binasa, pinili)
- *   incomp:   if comp used "ni": "ni" + redup(root) → niluluto
- *             else (infix route): insert infix "in" and reduplicate the next syllable → kinakain, binabasa (for basa: note -hin variant exists)
- *   cont:     redup(root) + with -in- inserted → lulutuin, kakainin, iinumin
- *
- * NOTE: Tagalog has lexical preferences; this rule set yields the standard forms for common verbs,
- * but keep LEXICON overrides for edge cases you encounter.
+ * Apply phonological transformations for -in suffix forms.
+ * Applies d→r and o/u→u transformations in sequence.
+ * @example applyInTransformations('lakad') // 'lakar'
+ * @example applyInTransformations('inom') // 'inum'
  */
-function conjINCompleted(root: string): string {
-	const override = getOverride(root, 'in', 'completed')
-	if (override) return override
-	const first = root[0]?.toLowerCase()
-	if (root && VOWEL_REGEX.test(root[0] ?? '')) return `in${root}` // inom -> ininom
-	if (first && (first === 'l' || first === 'r')) return `ni${root}` // luto -> niluto, linis -> nilinis
-	return insertInfix(root, 'in') // kain -> kinain, basa -> binasa, pili -> pinili
+function applyInTransformations(root: string): string {
+	let transformed = transformDToR(root)
+	transformed = transformOToU(transformed)
+	return transformed
 }
 
+/**
+ * Build the infinitive form for IN focus.
+ * @example buildInInfinitive('luto') // 'lutuin' (vowel-ending uses -hin form)
+ * @example buildInInfinitive('kain') // 'kainin' (consonant-ending uses -in)
+ */
+function buildInInfinitive(root: string): string {
+	const override = getOverride(root, 'in', 'infinitive')
+	if (override) return override
+
+	if (shouldUseHinSuffix(root)) {
+		return buildHinForm(root)
+	}
+
+	// Consonant-ending: apply transformations then add -in
+	return `${applyInTransformations(root)}in`
+}
+
+/**
+ * Build the completed form for IN focus.
+ * Uses different strategies based on root shape:
+ * - Vowel-initial: prefix "in" (inom → ininom)
+ * - Liquid-initial (l/r): prefix "ni" (luto → niluto)
+ * - Others: infix "in" (kain → kinain)
+ */
+function buildInCompleted(root: string): string {
+	const override = getOverride(root, 'in', 'completed')
+	if (override) return override
+
+	const firstChar = root[0]?.toLowerCase()
+	if (root && VOWEL_REGEX.test(root[0] ?? '')) return `in${root}`
+	if (isOneOf(firstChar, LIQUID_CONSONANTS)) return `ni${root}`
+	return insertInfix(root, 'in')
+}
+
+/**
+ * IN focus (object):
+ *   inf:      suffix -in/-hin (lutuin, kainin, inumin)
+ *   comp:     infix/prefix -in- or ni- based on root shape
+ *   incomp:   reduplicate with matching infix/prefix pattern
+ *   cont:     reduplicate + infinitive form
+ */
 function conjIN(root: string, aspect: Aspect): string {
-	const useHinSuffix = shouldUseHinSuffix(root)
-
 	switch (aspect) {
-		case 'infinitive': {
-			// Infinitive uses suffixes: -in or -hin
-			const override = getOverride(root, 'in', 'infinitive')
-			if (override) return override
-
-			if (useHinSuffix) {
-				return buildHinForm(root)
-			}
-
-			// For consonant-ending roots: apply transformations before adding -in
-			// 1. d → r: lakad → lakar
-			// 2. o/u → u: inom → inum
-			// Then add -in: lakarin, inumin, kainin
-			let transformed = transformDToR(root)
-			transformed = transformOToU(transformed)
-			return `${transformed}in`
-		}
+		case 'infinitive':
+			return buildInInfinitive(root)
 
 		case 'completed':
-			return conjINCompleted(root)
+			return buildInCompleted(root)
 
 		case 'incompleted': {
-			// decide based on which completed route we would take
-			const comp = conjINCompleted(root)
-			if (comp.startsWith('ni')) {
-				return `ni${reduplicate(root)}` // niluluto, nililinís (accent ignored)
+			const completed = buildInCompleted(root)
+			// Match the pattern used in completed
+			if (completed.startsWith('ni')) {
+				return `ni${reduplicate(root)}`
 			}
-			// infix route (kinain -> kinakain; binasa -> binabasa; sinulat -> sinusulat)
 			return insertInfix(reduplicate(root), 'in')
 		}
 
 		case 'contemplated': {
-			const r = reduplicate(root) // luluto, kakain, iinom
-			const futureOverride = getOverride(root, 'in', 'infinitive')
-			if (futureOverride) {
-				return r.replace(root, futureOverride)
-			}
-
-			if (useHinSuffix) {
-				// For vowel-ending roots: use -hin suffix form with o/u → u transformation
-				// luto → lulutuin (luluto → lutuin)
-				const futureStem = buildHinForm(root)
-				return r.replace(root, futureStem)
-			}
-
-			// For consonant-ending roots: apply transformations before adding -in
-			// 1. d → r: lakad → lakar
-			// 2. o/u → u: inom → inum
-			// Then add -in: lakarin, inumin, kainin
-			let transformed = transformDToR(root)
-			transformed = transformOToU(transformed)
-			const future = `${transformed}in`
-			// Stitch: replace the first occurrence of root in r with the transformed infinitive
-			return r.replace(root, future)
+			const reduplicated = reduplicate(root)
+			const infinitive = buildInInfinitive(root)
+			// Replace first occurrence of root with infinitive form
+			return reduplicated.replace(root, infinitive)
 		}
 	}
 }
