@@ -48,6 +48,11 @@ const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, strin
 		'in:incompleted': 'ibinibigay',
 		'in:contemplated': 'ibibigay',
 	},
+	sabi: {
+		// Exception: keeps final vowel before -hin (unlike other i-ending roots)
+		'in:infinitive': 'sabihin',
+		'in:contemplated': 'sasabihin',
+	},
 }
 
 function getOverride(root: string, focus: Focus, aspect: Aspect): string | undefined {
@@ -98,7 +103,10 @@ function buildHinForm(root: string): string {
 		return `${transformOToU(root)}hin`
 	}
 
-	// Other vowel endings (a, e, i) simply add -hin
+	// Other vowel endings: a/e simply add -hin, i drops final vowel before adding -hin
+	if (lastChar === 'i') {
+		return `${root.slice(0, -1)}hin`
+	}
 	return `${root}hin`
 }
 

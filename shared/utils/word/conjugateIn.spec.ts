@@ -102,6 +102,13 @@ describe('conjugate - in focus', () => {
 			incompleted: 'ibinibigay',
 			contemplated: 'ibibigay',
 		},
+		{
+			root: 'bili',
+			infinitive: 'bilhin',
+			completed: 'binili',
+			incompleted: 'binibili',
+			contemplated: 'bibilhin',
+		},
 	])('should conjugate in $root', ({ root, infinitive, completed, incompleted, contemplated }) => {
 		const focus = 'in'
 		expect(conjugate({ root, focus, aspect: 'infinitive' })).toBe(infinitive)
