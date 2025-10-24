@@ -247,7 +247,7 @@ function buildInCompleted(root: string): string {
  *
  * @example
  * // Contemplated: reduplicated root + infinitive suffix
- * conjIN('kain', 'contemplated') // 'kakaining' (will eat it)
+ * conjIN('kain', 'contemplated') // 'kakainin' (will eat it)
  * conjIN('luto', 'contemplated') // 'lulutuin' (will cook it)
  *
  * @remarks
