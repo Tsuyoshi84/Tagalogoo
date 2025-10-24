@@ -17,7 +17,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:pull": "drizzle-kit pull"
   },
   "dependencies": {
     "@nuxt/eslint": "1.9.0",
@@ -40,10 +41,12 @@
   "packageManager": "pnpm@10.17.0",
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
+    "@vue/test-utils": "^2.4.6",
     "@vueuse/core": "^13.9.0",
     "@vueuse/nuxt": "^13.9.0",
     "drizzle-kit": "^0.31.4",
     "lefthook": "^1.13.1",
+    "supabase": "^2.45.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4",
     "vue-tsc": "^3.0.7"
