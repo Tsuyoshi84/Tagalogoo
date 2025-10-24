@@ -47,7 +47,7 @@ Guidelines for utility functions.
 
 ## Documentation
 
-- JSDoc every exported function: purpose (Japanese), parameter semantics, return type, error/Result contract.
+- JSDoc every exported function: purpose, parameter semantics, return type, error/Result contract.
 - Include `@example` for non-trivial transformations or formatting.
 - Document invariants (e.g., "Assumes input ISO string is UTC").
 
