@@ -39,7 +39,7 @@
   },
   "packageManager": "pnpm@10.17.0",
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
+    "@biomejs/biome": "2.3.0",
     "@vueuse/core": "^13.9.0",
     "@vueuse/nuxt": "^13.9.0",
     "drizzle-kit": "^0.31.4",

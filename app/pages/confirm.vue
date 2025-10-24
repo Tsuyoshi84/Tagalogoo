@@ -8,7 +8,12 @@
 
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { navigateTo, useSupabaseClient, useSupabaseCookieRedirect, useSupabaseUser } from '#imports'
+import {
+	navigateTo,
+	useSupabaseClient,
+	useSupabaseCookieRedirect,
+	useSupabaseUser,
+} from '#imports'
 
 const supabaseClient = useSupabaseClient()
 const route = useRoute()
@@ -44,7 +49,9 @@ watch(
 
 		const redirectPath = redirectInfo.pluck()
 		const targetLocation =
-			typeof redirectPath === 'string' && redirectPath.length > 0 ? redirectPath : '/'
+			typeof redirectPath === 'string' && redirectPath.length > 0
+				? redirectPath
+				: '/'
 
 		await navigateTo(targetLocation, { replace: true })
 	},
@@ -69,7 +76,8 @@ onMounted(async () => {
 	const hasCode = typeof route.query.code === 'string'
 
 	if (!hasCode) {
-		errorMessage.value = 'Missing Google authorization code. Please initiate the login flow again.'
+		errorMessage.value =
+			'Missing Google authorization code. Please initiate the login flow again.'
 		statusMessage.value = 'We could not complete the login process.'
 		return
 	}
@@ -77,13 +85,17 @@ onMounted(async () => {
 	isExchangingSession.value = true
 
 	try {
-		const { error } = await supabaseClient.auth.exchangeCodeForSession(window.location.href)
+		const { error } = await supabaseClient.auth.exchangeCodeForSession(
+			window.location.href,
+		)
 
 		if (error) {
 			throw error
 		}
 	} catch (error) {
-		errorMessage.value = decodeProviderError(error instanceof Error ? error.message : error)
+		errorMessage.value = decodeProviderError(
+			error instanceof Error ? error.message : error,
+		)
 		statusMessage.value = 'We could not complete the login process.'
 	} finally {
 		isExchangingSession.value = false

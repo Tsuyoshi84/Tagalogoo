@@ -35,8 +35,7 @@
 			"nursery": {
 				"noFloatingPromises": "on",
 				"noImportCycles": "on",
-				"noMisusedPromises": "on",
-				"noNonNullAssertedOptionalChain": "on"
+				"noMisusedPromises": "on"
 			},
 			"style": {
 				"noUselessElse": "off",
@@ -65,6 +64,17 @@
 			"semicolons": "asNeeded",
 			"lineWidth": 100,
 			"quoteStyle": "single"
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": {
+			"enabled": true
 		}
 	},
 	"overrides": [

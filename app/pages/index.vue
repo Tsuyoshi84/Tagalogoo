@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { CheckCircle, Clock, LogOut, Mail, RefreshCw, User } from 'lucide-vue-next'
+import {
+	CheckCircle,
+	Clock,
+	LogOut,
+	Mail,
+	RefreshCw,
+	User,
+} from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useGoogleAuth } from '~/composables/useGoogleAuth'
 
-const { errorMessage, isAuthenticated, isPending, signOut, user } = useGoogleAuth()
+const { errorMessage, isAuthenticated, isPending, signOut, user } =
+	useGoogleAuth()
 
 const displayName = computed(() => {
 	if (!user.value) {
@@ -51,13 +59,13 @@ async function handleSignOut(): Promise<void> {
 				<div class="card bg-base-100 shadow-xl">
 					<div class="card-body">
 						<h2 class="card-title">
-							<User class="w-5 h-5" />
+							<User class="w-5 h-5"/>
 							Account Information
 						</h2>
 
 						<div class="space-y-4 mt-4">
 							<div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
-								<Mail class="w-4 h-4 text-primary" />
+								<Mail class="w-4 h-4 text-primary"/>
 								<div class="flex-1">
 									<div class="text-sm opacity-70">Email</div>
 									<div class="font-medium">{{ emailAddress }}</div>
@@ -101,7 +109,7 @@ async function handleSignOut(): Promise<void> {
 								:disabled="isPending"
 								@click="handleSignOut"
 							>
-								<LogOut class="w-4 h-4" />
+								<LogOut class="w-4 h-4"/>
 								Sign out
 							</button>
 
@@ -109,7 +117,7 @@ async function handleSignOut(): Promise<void> {
 								class="btn btn-primary btn-block justify-start"
 								:to="{ name: 'login' }"
 							>
-								<RefreshCw class="w-4 h-4" />
+								<RefreshCw class="w-4 h-4"/>
 								Switch account
 							</NuxtLink>
 						</div>
