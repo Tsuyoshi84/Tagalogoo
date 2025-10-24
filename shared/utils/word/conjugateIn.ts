@@ -17,23 +17,36 @@ import {
  * Only truly irregular forms should be added here - regular phonological transformations
  * should be handled in the conjugation logic itself.
  *
- * @example
- * // "dala" drops final vowel before -hin
- * LEXICON.dala['in:infinitive'] // 'dalhin'
- *
- * @example
- * // "kuha" is highly irregular
- * LEXICON.kuha['in:infinitive'] // 'kunin' (not *kuhahin)
+ * Common irregular verbs:
+ * - dala: inserts "h" in the future form (dadalhin)
+ * - kuha: irregular vowel change, no `hin` (kukunin)
+ * - turo: drops `hin` in the future (ituturo)
+ * - bigay: uses `i-` prefix, irregular pattern (ibibigay)
  */
 const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, string>>>> = {
 	dala: {
-		// Drops final vowel before -hin
+		// Drops final vowel before -hin in infinitive and contemplated
 		'in:infinitive': 'dalhin',
 		'in:contemplated': 'dadalhin',
 	},
 	kuha: {
 		// Complex: kuha → kunin (drops 'ha', adds 'n')
 		'in:infinitive': 'kunin',
+		'in:contemplated': 'kukunin',
+	},
+	turo: {
+		// Uses i- prefix pattern, drops hin in contemplated
+		'in:infinitive': 'ituro',
+		'in:completed': 'itinuro',
+		'in:incompleted': 'itinuturo',
+		'in:contemplated': 'ituturo',
+	},
+	bigay: {
+		// Uses i- prefix pattern throughout
+		'in:infinitive': 'ibigay',
+		'in:completed': 'ibinigay',
+		'in:incompleted': 'ibinibigay',
+		'in:contemplated': 'ibibigay',
 	},
 }
 
@@ -252,15 +265,28 @@ export function conjIN(root: string, aspect: Aspect): string {
 			return buildInCompleted(root)
 
 		case 'incompleted': {
+			// Check for lexicon override first
+			const override = getOverride(root, 'in', 'incompleted')
+			if (override) return override
+
 			const completed = buildInCompleted(root)
 			// Match the pattern used in completed
 			if (completed.startsWith('ni')) {
 				return `ni${reduplicate(root)}`
 			}
+			if (completed.startsWith('i') && !VOWEL_REGEX.test(root[0] ?? '')) {
+				// Handle i- prefix pattern for consonant-initial verbs (e.g., itinuro → itinuturo)
+				// But NOT for vowel-initial verbs (e.g., inom → ininom, not iiniinom)
+				return `i${insertInfix(reduplicate(root), 'in')}`
+			}
 			return insertInfix(reduplicate(root), 'in')
 		}
 
 		case 'contemplated': {
+			// Check for lexicon override first
+			const override = getOverride(root, 'in', 'contemplated')
+			if (override) return override
+
 			const reduplicated = reduplicate(root)
 			const infinitive = buildInInfinitive(root)
 			// Replace first occurrence of root with infinitive form
