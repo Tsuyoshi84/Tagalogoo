@@ -31,6 +31,20 @@ export interface ConjugateOptions {
 	aspect: Aspect
 }
 
+/**
+ * Conjugates a Tagalog verb root into the specified focus and aspect.
+ *
+ * Dispatches to focus-specific conjugation handlers (MAG, UM, or IN) to apply
+ * the appropriate affixation, infixation, and reduplication patterns.
+ *
+ * @param options - The conjugation parameters
+ * @returns The fully conjugated verb form
+ *
+ * @example
+ * conjugate({ root: 'kain', focus: 'mag', aspect: 'completed' }) // 'nagkain' (ate)
+ * conjugate({ root: 'kain', focus: 'um', aspect: 'infinitive' }) // 'kumain' (to eat)
+ * conjugate({ root: 'kain', focus: 'in', aspect: 'infinitive' }) // 'kainin' (to be eaten)
+ */
 export function conjugate({ root, focus, aspect }: ConjugateOptions): string {
 	return FOCUS_HANDLERS[focus](root, aspect)
 }
