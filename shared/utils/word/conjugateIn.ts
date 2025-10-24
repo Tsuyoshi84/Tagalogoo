@@ -18,9 +18,9 @@ import {
  * should be handled in the conjugation logic itself.
  *
  * Common irregular verbs:
- * - dala: inserts "h" in the future form (dadalhin)
+ * - dala: inserts "h" in the contemplated form (dadalhin)
  * - kuha: irregular vowel change, no `hin` (kukunin)
- * - turo: drops `hin` in the future (ituturo)
+ * - turo: drops `hin` in the contemplated form (ituturo)
  * - bigay: uses `i-` prefix, irregular pattern (ibibigay)
  */
 const LEXICON: Partial<Record<string, Partial<Record<`${Focus}:${Aspect}`, string>>>> = {
@@ -62,11 +62,6 @@ function getOverride(root: string, focus: Focus, aspect: Aspect): string | undef
  *
  * @param root - The verb root to check
  * @returns `true` if the root ends with a vowel, `false` otherwise
- *
- * @example
- * shouldUseHinSuffix('luto') // true (ends with 'o')
- * shouldUseHinSuffix('kain') // false (ends with 'n')
- * shouldUseHinSuffix('bili') // true (ends with 'i')
  */
 function shouldUseHinSuffix(root: string): boolean {
 	if (!root) return false
@@ -84,21 +79,6 @@ function shouldUseHinSuffix(root: string): boolean {
  *
  * @param root - The vowel-ending verb root
  * @returns The infinitive form with appropriate suffix
- *
- * @example
- * // Liquid initial (l/r) + o/u ending: use -in suffix
- * buildHinForm('luto') // 'lutuin' (l + o → u + in)
- * buildHinForm('relo') // 'reluhin' (r + o → u + in)
- *
- * @example
- * // Non-liquid + o/u ending: use -hin suffix
- * buildHinForm('takbo') // 'takbuhin' (o → u + hin)
- * buildHinForm('puno') // 'punuhin' (o → u + hin)
- *
- * @example
- * // Other vowel endings: just add -hin
- * buildHinForm('dala') // 'dalhin' (a + hin)
- * buildHinForm('bili') // 'bilihin' (i + hin)
  */
 function buildHinForm(root: string): string {
 	if (!root) return root
@@ -131,16 +111,6 @@ function buildHinForm(root: string): string {
  *
  * @param root - The verb root to transform
  * @returns The transformed root ready for -in suffix
- *
- * @example
- * // Final 'd' becomes 'r'
- * applyInTransformations('lakad') // 'lakar' → lakarin
- * applyInTransformations('tawid') // 'tawir' → tawirin
- *
- * @example
- * // Internal 'o' becomes 'u'
- * applyInTransformations('inom') // 'inum' → inumin
- * applyInTransformations('sulat') // 'sulat' (no change, no 'o')
  */
 function applyInTransformations(root: string): string {
 	let transformed = transformDToR(root)
@@ -157,18 +127,6 @@ function applyInTransformations(root: string): string {
  *
  * @param root - The verb root
  * @returns The infinitive form in IN focus
- *
- * @example
- * // Vowel-ending roots use -hin form
- * buildInInfinitive('luto') // 'lutuin' (liquid + o/u)
- * buildInInfinitive('dala') // 'dalhin' (other vowel)
- * buildInInfinitive('bili') // 'bilihin' (ends with i)
- *
- * @example
- * // Consonant-ending roots use -in with transformations
- * buildInInfinitive('kain') // 'kainin' (no transformation needed)
- * buildInInfinitive('lakad') // 'lakarin' (d→r transformation)
- * buildInInfinitive('inom') // 'inumin' (o→u transformation)
  */
 function buildInInfinitive(root: string): string {
 	const override = getOverride(root, 'in', 'infinitive')
@@ -192,21 +150,6 @@ function buildInInfinitive(root: string): string {
  *
  * @param root - The verb root
  * @returns The completed form in IN focus
- *
- * @example
- * // Vowel-initial: prefix "in-"
- * buildInCompleted('inom') // 'ininom' (drank)
- * buildInCompleted('abot') // 'inabot' (reached)
- *
- * @example
- * // Liquid-initial (l/r): prefix "ni-"
- * buildInCompleted('luto') // 'niluto' (cooked)
- * buildInCompleted('relo') // 'nirelo' (watched over)
- *
- * @example
- * // Other consonants: infix "-in-"
- * buildInCompleted('kain') // 'kinain' (eaten)
- * buildInCompleted('sulat') // 'sinulat' (written)
  */
 function buildInCompleted(root: string): string {
 	const override = getOverride(root, 'in', 'completed')
